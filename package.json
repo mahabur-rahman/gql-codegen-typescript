@@ -1,0 +1,36 @@
+{
+  "name": "react-type-gql",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite --host\" \"npm run gql-watch\"",
+    "build": "npm run gql-compile && tsc && vite build",
+    "preview": "vite preview --base=./",
+    "gql-compile": "graphql-codegen",
+    "gql-watch": "graphql-codegen -w"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.10.6",
+    "concurrently": "^8.2.2",
+    "graphql": "^16.9.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/client-preset": "^4.3.0",
+    "@parcel/watcher": "^2.4.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1"
+  }
+}
