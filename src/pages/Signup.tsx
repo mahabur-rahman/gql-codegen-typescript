@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client";
 import { Button, Form, Input, message } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import { SIGN_UP } from "../graphql/mutations/mutations";
+import { useNavigate } from "react-router-dom";
 
 interface FieldType {
   firstName: string;
@@ -12,6 +13,7 @@ interface FieldType {
 
 const Signup = () => {
   const [form] = useForm();
+  const navigate = useNavigate();
 
   const [signUp, { loading }] = useMutation(SIGN_UP, {
     onCompleted: () => {
@@ -27,7 +29,10 @@ const Signup = () => {
 
   const onFinish = async (values: FieldType) => {
     try {
-      await signUp({ variables: { signUpDto: values } });
+      const res = await signUp({ variables: { signUpDto: values } });
+      if(res) {
+        navigate('/signin')
+      }
     } catch (err) {
       console.error("Error:", err);
     }

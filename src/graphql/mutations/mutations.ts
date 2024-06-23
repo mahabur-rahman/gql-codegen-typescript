@@ -1,7 +1,6 @@
 import { gql } from "../__generated__";
 
 export const SIGN_UP = gql(`
-    
 mutation SignUpUser($signUpDto:SignUpDto!){
     signUp(signUpDto:$signUpDto){
         _id
@@ -14,3 +13,4 @@ mutation SignUpUser($signUpDto:SignUpDto!){
 }
     
 `);
+

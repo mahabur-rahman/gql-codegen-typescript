@@ -8,6 +8,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 const client = new ApolloClient({
   uri: "http://localhost:5000/graphql",
   cache: new InMemoryCache(),
+  headers: {
+    authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
