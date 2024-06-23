@@ -84,6 +84,11 @@ export type Query = {
 };
 
 
+export type QueryGetAllQuotesArgs = {
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryGetSingleQuoteByIdArgs = {
   id: Scalars['String']['input'];
 };

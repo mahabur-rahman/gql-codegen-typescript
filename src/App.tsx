@@ -1,10 +1,13 @@
-import "./App.css";
-import Home from "./components/Home";
+import { Navbar } from "./components/Navbar";
+import { useRoutes } from "react-router-dom";
+import { routes } from "./route";
 
 function App() {
+  const router = useRoutes(routes);
   return (
     <>
-    <Home />
+      <Navbar />
+      {router}
     </>
   );
 }
