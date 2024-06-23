@@ -1,6 +1,10 @@
 import { gql, useLazyQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { AppDispatch } from "../store";
+import { login as loginAction } from "../store/authSlice";  
+
 
 const LOGIN_USER = gql`
   query($email: String!, $password: String!) {
@@ -9,6 +13,8 @@ const LOGIN_USER = gql`
 `;
 
 const Login = () => {
+  const dispatch = useDispatch<AppDispatch>()
+
   const [login, { data, loading, error }] = useLazyQuery(LOGIN_USER);
   const navigate = useNavigate();
 
@@ -27,27 +33,33 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     login({
       variables: {
         email: formData.email,
         password: formData.password,
       },
     });
+
+    
   };
 
   useEffect(() => {
     if (data && data.login) {
+
       const token = data.login;
-      localStorage.setItem("token", token);
+
+      dispatch(loginAction({ access_token: token })); 
+      
       navigate("/");
     } else if (error) {
       console.error("Error logging in:", error);
     }
-  }, [data, error, navigate]);
+  }, [data, error, navigate, dispatch]);
 
   if (loading) return <h2>Loading...</h2>;
 
-  console.log(data)
+
 
   return (
     <div>

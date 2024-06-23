@@ -1,6 +1,4 @@
 import { gql } from "../__generated__";
-
-
 export const LOGIN_USER  = gql(`
     query($email: String! $password: String!){
       login(email:$email, password:$password)
