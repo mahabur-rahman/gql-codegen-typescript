@@ -2,20 +2,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { logout } from "../store/authSlice";
+import { Input } from 'antd';
+import { setSearchQuery } from "../store/searchSlice";
 
 export const Navbar = () => {
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
-  const accessToken = useSelector((state: RootState) =>  state.auth.accessToken)
-  const dispatch = useDispatch<AppDispatch>()
-  
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/signin");
+  };
 
-  const navigate = useNavigate()
-
-
-  const handleLogout = () =>{
-    dispatch(logout())
-    navigate('/signin')
-  }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    dispatch(setSearchQuery(query));
+    navigate(`/quotes?search=${query}`);
+  };
 
   return (
     <div className="px-4 py-5 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
@@ -46,6 +50,9 @@ export const Navbar = () => {
               Company
             </span>
           </Link>
+          <div className="mx-12">
+            <Input placeholder="Enter keyword" onChange={handleSearch} />
+          </div>
           <ul className="flex items-center hidden space-x-8 lg:flex">
             <li>
               <Link
@@ -102,7 +109,7 @@ export const Navbar = () => {
                   aria-label="Sign up"
                   title="Sign up"
                 >
-                  Sign up
+                  Sign Up
                 </Link>
               </li>
             </>
@@ -111,5 +118,4 @@ export const Navbar = () => {
       </div>
     </div>
   );
-  
 };
