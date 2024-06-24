@@ -2,34 +2,26 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
 import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
-import { DELETE_QUOTE } from "../graphql/mutations/mutations";
+import { DELETE_QUOTE, UPDATE_QUOTE } from "../graphql/mutations/mutations";
 import { Modal } from "antd";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const QuotePage = () => {
-  const [updateQuoteTitle, setUpdateQuoteTitle] = useState('')
+  const [updateQuoteMutation, { error: updateError }] =
+    useMutation(UPDATE_QUOTE);
+  const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
+  const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentQuoteId, setCurrentQuoteId] = useState("");
 
   const accessToken = useSelector(
     (state: RootState) => state?.auth?.accessToken
   );
+
   const { user } = useSelector((state: RootState) => state?.auth);
-
-  // for modal
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -39,7 +31,42 @@ const QuotePage = () => {
     variables: { title: title || undefined },
   });
 
-  const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
+  // for modal
+  const showModal = (quoteId: string, createById: string) => {
+    if (!accessToken) {
+      alert("Access token is missing. Please login to update quotes.");
+      return;
+    }
+
+    if (user?._id !== createById) {
+      alert("You are not authorized to update this quote.");
+      return;
+    }
+
+    setCurrentQuoteId(quoteId);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = async () => {
+    setIsModalOpen(false);
+    try {
+      const response = await updateQuoteMutation({
+        variables: {
+          id: currentQuoteId,
+          title: updateQuoteTitle,
+        },
+      });
+      console.log(`response: `, response.data?.updateQuote);
+      // Refetch the getAllQuotes query to update the UI after update
+      await refetch();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   // delete quote
   const handleDelete = async (quoteId: string, createdById: string) => {
@@ -71,12 +98,9 @@ const QuotePage = () => {
 
   if (loading) return <h1>Loading...</h1>;
 
-
-  const handleTitleChange = (e) => {
-    setUpdateQuoteTitle(e.target.value)
-  }
-
-  console.log(updateQuoteTitle)
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateQuoteTitle(e.target.value);
+  };
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <div key={quote._id} className="my-8">
@@ -104,7 +128,7 @@ const QuotePage = () => {
       </div>
 
       <div className="flex items-center justify-around bg-gray-50">
-        <div onClick={showModal}>
+        <div onClick={() => showModal(quote._id, quote.createBy._id)}>
           <FaEdit />
         </div>
         <div
@@ -136,7 +160,11 @@ const QuotePage = () => {
           onOk={handleOk}
           onCancel={handleCancel}
         >
-          <input type="text" placeholder="Enter your quote title.." onChange={handleTitleChange} />
+          <input
+            type="text"
+            placeholder="Enter your quote title.."
+            onChange={handleTitleChange}
+          />
         </Modal>
       </div>
     </div>
