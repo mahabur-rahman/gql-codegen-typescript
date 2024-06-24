@@ -23,3 +23,14 @@ export const DELETE_QUOTE = gql(`
 }
     
  `);
+
+
+
+ export const UPDATE_QUOTE = gql(`
+     mutation updateQuote($id:String!, $title:String!){
+        updateQuote(id:$id, title:$title){
+            _id
+            title
+        }
+}
+    `)

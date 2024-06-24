@@ -3,17 +3,33 @@ import { GET_ALL_QUOTES } from "../graphql/queries/queries";
 import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { DELETE_QUOTE } from "../graphql/mutations/mutations";
+import { Modal } from "antd";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
+import { useState } from "react";
 
 const QuotePage = () => {
+  const [updateQuoteTitle, setUpdateQuoteTitle] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const accessToken = useSelector(
     (state: RootState) => state?.auth?.accessToken
   );
   const { user } = useSelector((state: RootState) => state?.auth);
 
-  console.log(user);
+  // for modal
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -55,6 +71,13 @@ const QuotePage = () => {
 
   if (loading) return <h1>Loading...</h1>;
 
+
+  const handleTitleChange = (e) => {
+    setUpdateQuoteTitle(e.target.value)
+  }
+
+  console.log(updateQuoteTitle)
+
   const quotes = data?.getAllQuotes?.map((quote) => (
     <div key={quote._id} className="my-8">
       <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
@@ -81,7 +104,7 @@ const QuotePage = () => {
       </div>
 
       <div className="flex items-center justify-around bg-gray-50">
-        <div>
+        <div onClick={showModal}>
           <FaEdit />
         </div>
         <div
@@ -105,6 +128,16 @@ const QuotePage = () => {
         <div className="max-w-md sm:mx-auto sm:text-center">{quotes}</div>
 
         {error && <h2 className="text-red-500">Error : {error.message}</h2>}
+
+        {/* modal show */}
+        <Modal
+          title="Update Quote title"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <input type="text" placeholder="Enter your quote title.." onChange={handleTitleChange} />
+        </Modal>
       </div>
     </div>
   );
