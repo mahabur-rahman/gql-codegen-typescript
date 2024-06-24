@@ -4,20 +4,30 @@ import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { DELETE_QUOTE } from "../graphql/mutations/mutations";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+
 const QuotePage = () => {
+  const accessToken = useSelector((state: RootState) => state?.auth?.accessToken);
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const title = searchParams.get("title");
 
-  const { data, loading, error, refetch } = useQuery(GET_ALL_QUOTES, {
+  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
     variables: { title: title || undefined },
   });
 
-  const [deleteQuoteMutation] = useMutation(DELETE_QUOTE);
+  const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
 
   // delete quote
   const handleDelete = async (quoteId: string) => {
     try {
+      if (!accessToken) {
+        alert("Access token is missing. Please login to delete quotes.");
+        return;
+      }
+
       const response = await deleteQuoteMutation({
         variables: {
           id: quoteId,
@@ -37,6 +47,7 @@ const QuotePage = () => {
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <div key={quote._id} className="my-8">
+     
       <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
 
       <div
@@ -81,7 +92,7 @@ const QuotePage = () => {
       <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
         <div className="max-w-md sm:mx-auto sm:text-center">{quotes}</div>
 
-        {error && <h2>Failed to fetch : {error.message}</h2>}
+        {error && <h2 className="text-red-500">Error : {error.message}</h2>}
       </div>
     </div>
   );
