@@ -1,47 +1,73 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
 import { useLocation } from "react-router-dom";
+import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+import { DELETE_QUOTE } from "../graphql/mutations/mutations";
 
 const QuotePage = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const title = searchParams.get('title');
+  const title = searchParams.get("title");
 
-  const { data, loading, error } = useQuery(GET_ALL_QUOTES, {
-    variables: { title: title || undefined }, // Pass undefined if title is empty
+  const { data, loading, error, refetch } = useQuery(GET_ALL_QUOTES, {
+    variables: { title: title || undefined },
   });
+
+  const [deleteQuoteMutation] = useMutation(DELETE_QUOTE);
+
+  // delete quote
+  const handleDelete = async (quoteId: string) => {
+    try {
+      const response = await deleteQuoteMutation({
+        variables: {
+          id: quoteId,
+        },
+      });
+
+      console.log("Quote deleted successfully:", response);
+
+      // Refetch the getAllQuotes query to update the UI after deletion
+      await refetch();
+    } catch (error) {
+      console.error("Error deleting quote:", error);
+    }
+  };
 
   if (loading) return <h1>Loading...</h1>;
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <div key={quote._id} className="my-8">
-      <h6 className="mb-3 text-xl font-bold leading-5">
-        {quote.title} - 
-      </h6>
+      <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
 
-      <a
-        href="/"
+      <div
         aria-label=""
         className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
       >
         {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
-      </a>
+      </div>
 
-      <a
-        href="/"
+      <div
         aria-label=""
         className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
       >
-        {quote?.createBy?.email} 
-      </a>
+        {quote?.createBy?.email}
+      </div>
 
-      <a
-        href="/"
+      <div
         aria-label=""
         className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
       >
-        {quote?.createBy?.role} 
-      </a>
+        {quote?.createBy?.role}
+      </div>
+
+      <div className="flex items-center justify-around bg-gray-50">
+        <div>
+          <FaEdit />
+        </div>
+        <div className="text-red-500" onClick={() => handleDelete(quote._id)}>
+          <FaRegTrashAlt />
+        </div>
+      </div>
     </div>
   ));
 
@@ -53,9 +79,7 @@ const QuotePage = () => {
         </h2>
       </div>
       <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
-        <div className="max-w-md sm:mx-auto sm:text-center">
-          {quotes}
-        </div>
+        <div className="max-w-md sm:mx-auto sm:text-center">{quotes}</div>
 
         {error && <h2>Failed to fetch : {error.message}</h2>}
       </div>

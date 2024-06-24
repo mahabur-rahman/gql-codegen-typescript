@@ -14,3 +14,12 @@ mutation SignUpUser($signUpDto:SignUpDto!){
     
 `);
 
+export const DELETE_QUOTE = gql(`      
+    mutation deleteQuote($id: String!){
+        deleteQuote(id : $id){
+            _id
+            title
+     }
+}
+    
+ `);
