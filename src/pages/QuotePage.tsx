@@ -1,35 +1,30 @@
 import { useQuery } from "@apollo/client";
-import { useLocation } from "react-router-dom";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
+import { useLocation } from "react-router-dom";
 
 const QuotePage = () => {
-  const { data, loading, error } = useQuery(GET_ALL_QUOTES);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const searchQuery = searchParams.get("search") || "";
+  const title = searchParams.get('title');
+
+  const { data, loading, error } = useQuery(GET_ALL_QUOTES, {
+    variables: { title: title || undefined }, // Pass undefined if title is empty
+  });
 
   if (loading) return <h1>Loading...</h1>;
-  if (error) return <h2>Failed to fetch: {error.message}</h2>;
 
-  const filteredQuotes = data?.getAllQuotes?.filter(
-    (quote) =>
-      quote.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      quote.createBy.firstName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      quote.createBy.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const quotes = filteredQuotes?.map((quote) => (
+  const quotes = data?.getAllQuotes?.map((quote) => (
     <div key={quote._id} className="my-8">
-      <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
+      <h6 className="mb-3 text-xl font-bold leading-5">
+        {quote.title} - 
+      </h6>
 
       <a
         href="/"
         aria-label=""
         className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
       >
-        {quote.createBy.firstName} {quote.createBy.lastName}
+        {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
       </a>
 
       <a
@@ -37,7 +32,7 @@ const QuotePage = () => {
         aria-label=""
         className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
       >
-        {quote.createBy.email}
+        {quote?.createBy?.email} 
       </a>
 
       <a
@@ -45,8 +40,7 @@ const QuotePage = () => {
         aria-label=""
         className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
       >
-        {" "}
-        {quote.createBy.role}
+        {quote?.createBy?.role} 
       </a>
     </div>
   ));
@@ -59,7 +53,11 @@ const QuotePage = () => {
         </h2>
       </div>
       <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
-        <div className="max-w-md sm:mx-auto sm:text-center">{quotes}</div>
+        <div className="max-w-md sm:mx-auto sm:text-center">
+          {quotes}
+        </div>
+
+        {error && <h2>Failed to fetch : {error.message}</h2>}
       </div>
     </div>
   );

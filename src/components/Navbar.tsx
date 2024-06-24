@@ -16,9 +16,15 @@ export const Navbar = () => {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    dispatch(setSearchQuery(query));
-    navigate(`/quotes?search=${query}`);
+    const query = e.target.value.trim(); // Trim whitespace from input
+
+    if (query !== '') {
+      dispatch(setSearchQuery(query));
+      navigate(`/quotes${query ? `?title=${encodeURIComponent(query)}` : ''}`);
+    } else {
+      dispatch(setSearchQuery(''));
+      navigate(`/quotes`);
+    }
   };
 
   return (
@@ -49,10 +55,11 @@ export const Navbar = () => {
             <span className="ml-2 text-xl font-bold tracking-wide text-gray-800 uppercase">
               Company
             </span>
+
+            <div className="mx-12">
+              <Input placeholder="Enter keyword" onChange={handleSearch} />
+            </div>
           </Link>
-          <div className="mx-12">
-            <Input placeholder="Enter keyword" onChange={handleSearch} />
-          </div>
           <ul className="flex items-center hidden space-x-8 lg:flex">
             <li>
               <Link
@@ -109,7 +116,7 @@ export const Navbar = () => {
                   aria-label="Sign up"
                   title="Sign up"
                 >
-                  Sign Up
+                  Sign up
                 </Link>
               </li>
             </>

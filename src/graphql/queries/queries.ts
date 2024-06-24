@@ -6,8 +6,8 @@ export const LOGIN_USER  = gql(`
     
 
 export const GET_ALL_QUOTES = gql(`
-  query getAllQuotes {
-    getAllQuotes {
+   query getAllQuotes($title:String) {
+    getAllQuotes(title: $title) {
         _id
         title
         createBy {
@@ -20,4 +20,3 @@ export const GET_ALL_QUOTES = gql(`
     }
 }
 `);
-
