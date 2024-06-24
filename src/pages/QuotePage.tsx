@@ -126,17 +126,19 @@ const QuotePage = () => {
         {quote?.createBy?.role}
       </div>
 
-      <div className="flex items-center justify-around bg-gray-50">
-        <div onClick={() => showModal(quote._id, quote.createBy._id)}>
-          <FaEdit />
+      {user?._id === quote.createBy._id && (
+        <div className="flex items-center justify-around bg-gray-50">
+          <div onClick={() => showModal(quote._id, quote.createBy._id)}>
+            <FaEdit />
+          </div>
+          <div
+            className="text-red-500"
+            onClick={() => handleDelete(quote._id, quote.createBy._id)}
+          >
+            <FaRegTrashAlt />
+          </div>
         </div>
-        <div
-          className="text-red-500"
-          onClick={() => handleDelete(quote._id, quote.createBy._id)}
-        >
-          <FaRegTrashAlt />
-        </div>
-      </div>
+      )}
     </div>
   ));
 
