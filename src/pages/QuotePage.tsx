@@ -8,7 +8,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 
 const QuotePage = () => {
-  const accessToken = useSelector((state: RootState) => state?.auth?.accessToken);
+  const accessToken = useSelector(
+    (state: RootState) => state?.auth?.accessToken
+  );
+  const { user } = useSelector((state: RootState) => state?.auth);
+
+  console.log(user);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -21,10 +26,15 @@ const QuotePage = () => {
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
 
   // delete quote
-  const handleDelete = async (quoteId: string) => {
+  const handleDelete = async (quoteId: string, createdById: string) => {
     try {
       if (!accessToken) {
         alert("Access token is missing. Please login to delete quotes.");
+        return;
+      }
+
+      if (user?._id !== createdById) {
+        alert("You are not authorized to delete this quote.");
         return;
       }
 
@@ -47,7 +57,6 @@ const QuotePage = () => {
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <div key={quote._id} className="my-8">
-     
       <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
 
       <div
@@ -75,7 +84,10 @@ const QuotePage = () => {
         <div>
           <FaEdit />
         </div>
-        <div className="text-red-500" onClick={() => handleDelete(quote._id)}>
+        <div
+          className="text-red-500"
+          onClick={() => handleDelete(quote._id, quote.createBy._id)}
+        >
           <FaRegTrashAlt />
         </div>
       </div>

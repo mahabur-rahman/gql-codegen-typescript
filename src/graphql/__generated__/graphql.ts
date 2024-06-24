@@ -20,6 +20,12 @@ export type CreateQuoteDto = {
   title: Scalars['String']['input'];
 };
 
+export type LoginResponseType = {
+  __typename?: 'LoginResponseType';
+  token: Scalars['String']['output'];
+  user: User;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createQuote: Quote;
@@ -79,7 +85,7 @@ export type Query = {
   getSingleUserById: User;
   getUserProfile: User;
   hello: Scalars['String']['output'];
-  login: Scalars['String']['output'];
+  login: LoginResponseType;
   securedData: Scalars['String']['output'];
 };
 
