@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { DELETE_QUOTE, UPDATE_QUOTE } from "../graphql/mutations/mutations";
 import { Modal } from "antd";
-
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import React, { useState } from "react";
