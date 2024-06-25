@@ -39,6 +39,8 @@ const [writeComment] = useMutation(CREATE_COMMENT)
       };
     
 
+
+
   return (
     <div>
       {data?.getCommentsByQuote?.map((comment) => (
@@ -50,8 +52,11 @@ const [writeComment] = useMutation(CREATE_COMMENT)
               <li key={user?._id}>{user?.firstName} {user?.lastName}</li>
             ))}
           </ul>
+
+
         </div>
       ))}
+
 
       <WriteComment onCommentSubmit={handleCommentSubmit}/>
     </div>

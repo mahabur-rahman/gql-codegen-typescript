@@ -4,10 +4,7 @@ type CommentProps = {
   onCommentSubmit: (commentText: string) => void;
 };
 
-
 const WriteComment: React.FC<CommentProps> = ({ onCommentSubmit }) => {
-  
-
   const [commentText, setCommentText] = useState("");
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,9 +19,9 @@ const WriteComment: React.FC<CommentProps> = ({ onCommentSubmit }) => {
 
 
 
+
   return (
     <div>
- 
       <input
         type="text"
         placeholder="Write a comment..."
