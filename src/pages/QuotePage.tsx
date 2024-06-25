@@ -19,6 +19,15 @@ const QuotePage = () => {
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
+  const [likesInfo, setLikesInfo] = useState<
+    Array<{
+      _id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      role: string;
+    }>
+  >([]);
 
   const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -134,9 +143,21 @@ const QuotePage = () => {
     }
   };
 
-  const showModalLike = () => {
+  const showModalLike = (
+    likesQuote: Array<{
+      _id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      role: string;
+    }>
+  ) => {
+    setLikesInfo(likesQuote);
+
     setIsModalOpenLike(true);
   };
+
+  console.log(likesInfo);
 
   const handleOkLike = () => {
     setIsModalOpenLike(false);
@@ -199,7 +220,21 @@ const QuotePage = () => {
           </div>
         </div>
 
-        <div onClick={showModalLike}>Whose are likes</div>
+        <div
+          onClick={() =>
+            showModalLike(
+              quote.likes.map(({ _id, firstName, lastName, email, role }) => ({
+                _id,
+                firstName,
+                lastName,
+                email,
+                role: role || "",
+              }))
+            )
+          }
+        >
+          Whose are likes
+        </div>
       </div>
     </>
   ));
@@ -237,9 +272,11 @@ const QuotePage = () => {
           onOk={handleOkLike}
           onCancel={handleCancelLike}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          {likesInfo?.map((info) => (
+            <div key={info._id}>
+              <p>{info.firstName}</p>
+            </div>
+          ))}
         </Modal>
       </div>
     </div>
