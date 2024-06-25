@@ -14,7 +14,6 @@ import { RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 
-
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
@@ -23,6 +22,7 @@ const QuotePage = () => {
 
   const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenLike, setIsModalOpenLike] = useState(false);
 
   const [currentQuoteId, setCurrentQuoteId] = useState("");
 
@@ -134,7 +134,17 @@ const QuotePage = () => {
     }
   };
 
+  const showModalLike = () => {
+    setIsModalOpenLike(true);
+  };
 
+  const handleOkLike = () => {
+    setIsModalOpenLike(false);
+  };
+
+  const handleCancelLike = () => {
+    setIsModalOpenLike(false);
+  };
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
@@ -189,7 +199,7 @@ const QuotePage = () => {
           </div>
         </div>
 
-   
+        <div onClick={showModalLike}>Whose are likes</div>
       </div>
     </>
   ));
@@ -198,7 +208,7 @@ const QuotePage = () => {
     <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
       <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
         <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
-          Quote Page ---- {data?.getAllQuotes.length} results
+          All Feeds ---- {data?.getAllQuotes.length} results
         </h2>
       </div>
       <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
@@ -218,6 +228,18 @@ const QuotePage = () => {
             placeholder="Enter your quote title.."
             onChange={handleTitleChange}
           />
+        </Modal>
+
+        {/* like  */}
+        <Modal
+          title="Whose are likes a quote"
+          open={isModalOpenLike}
+          onOk={handleOkLike}
+          onCancel={handleCancelLike}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
         </Modal>
       </div>
     </div>
