@@ -24,18 +24,14 @@ export const DELETE_QUOTE = gql(`
     
  `);
 
-
-
- export const UPDATE_QUOTE = gql(`
+export const UPDATE_QUOTE = gql(`
      mutation updateQuote($id:String!, $title:String!){
         updateQuote(id:$id, title:$title){
             _id
             title
         }
 }
-    `)
-
-
+    `);
 
 export const LIKE_QUOTE = gql(`  
  mutation likeQuote($id:String!){
@@ -48,9 +44,7 @@ export const LIKE_QUOTE = gql(`
      }
 }
         
- `)
-
-
+ `);
 
 export const DISLIKE_QUOTE = gql(`
         
@@ -63,4 +57,13 @@ dislikes{
 }
   }
 }       
- `)
+ `);
+
+export const CREATE_COMMENT = gql(`
+    
+ mutation createComment($createCommentDto: CreateCommentDto!){
+    createComment(createCommentDto: $createCommentDto){
+            _id
+            content
+        }
+}`);

@@ -13,12 +13,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
+import FetchComment from "../components/FetchComment";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
+
   const [likesInfo, setLikesInfo] = useState<
     Array<{
       _id: string;
@@ -30,16 +32,14 @@ const QuotePage = () => {
   >([]);
 
   const [disLikesInfo, setDisLikesInfo] = useState<
-  Array<{
-    _id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-  }>
->([]);
-
-
+    Array<{
+      _id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      role: string;
+    }>
+  >([]);
 
   const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -178,7 +178,6 @@ const QuotePage = () => {
     setIsModalOpenLike(false);
   };
 
-
   // dislike modal
 
   const showModalDisLike = (
@@ -195,13 +194,14 @@ const QuotePage = () => {
     setIsModalOpenDislike(true);
   };
 
-  const handleOkDislike  = () => {
-    setIsModalOpenDislike (false);
+  const handleOkDislike = () => {
+    setIsModalOpenDislike(false);
   };
 
-  const handleCancelDislike  = () => {
-    setIsModalOpenDislike (false);
+  const handleCancelDislike = () => {
+    setIsModalOpenDislike(false);
   };
+
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
@@ -275,7 +275,8 @@ const QuotePage = () => {
             Whose are likes
           </div>
 
-          <div   onClick={() =>
+          <div
+            onClick={() =>
               showModalDisLike(
                 quote.dislikes.map(
                   ({ _id, firstName, lastName, email, role }) => ({
@@ -287,13 +288,18 @@ const QuotePage = () => {
                   })
                 )
               )
-            }>Whose are dislikes</div>
+            }
+          >
+            Whose are dislikes
+          </div>
+        </div>
+
+        <div className="py-5 bg-red-50">
+          <FetchComment quoteId={quote._id} />
         </div>
       </div>
     </>
   ));
-
-  console.log(disLikesInfo)
 
   return (
     <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
@@ -336,13 +342,18 @@ const QuotePage = () => {
         </Modal>
 
         {/* dislike */}
-        <Modal title="Whose are dislikes a quote.." open={isModalOpenDislike} onOk={handleOkDislike} onCancel={handleCancelDislike}>
-        {disLikesInfo?.map((info) => (
+        <Modal
+          title="Whose are dislikes a quote.."
+          open={isModalOpenDislike}
+          onOk={handleOkDislike}
+          onCancel={handleCancelDislike}
+        >
+          {disLikesInfo?.map((info) => (
             <div key={info._id}>
               <p>{info.firstName}</p>
             </div>
           ))}
-      </Modal>
+        </Modal>
       </div>
     </div>
   );
