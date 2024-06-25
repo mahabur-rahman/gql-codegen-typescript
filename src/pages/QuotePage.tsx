@@ -29,9 +29,22 @@ const QuotePage = () => {
     }>
   >([]);
 
+  const [disLikesInfo, setDisLikesInfo] = useState<
+  Array<{
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }>
+>([]);
+
+
+
   const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenLike, setIsModalOpenLike] = useState(false);
+  const [isModalOpenDislike, setIsModalOpenDislike] = useState(false);
 
   const [currentQuoteId, setCurrentQuoteId] = useState("");
 
@@ -157,14 +170,37 @@ const QuotePage = () => {
     setIsModalOpenLike(true);
   };
 
-  console.log(likesInfo);
-
   const handleOkLike = () => {
     setIsModalOpenLike(false);
   };
 
   const handleCancelLike = () => {
     setIsModalOpenLike(false);
+  };
+
+
+  // dislike modal
+
+  const showModalDisLike = (
+    likesQuote: Array<{
+      _id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      role: string;
+    }>
+  ) => {
+    setDisLikesInfo(likesQuote);
+
+    setIsModalOpenDislike(true);
+  };
+
+  const handleOkDislike  = () => {
+    setIsModalOpenDislike (false);
+  };
+
+  const handleCancelDislike  = () => {
+    setIsModalOpenDislike (false);
   };
 
   const quotes = data?.getAllQuotes?.map((quote) => (
@@ -220,24 +256,44 @@ const QuotePage = () => {
           </div>
         </div>
 
-        <div
-          onClick={() =>
-            showModalLike(
-              quote.likes.map(({ _id, firstName, lastName, email, role }) => ({
-                _id,
-                firstName,
-                lastName,
-                email,
-                role: role || "",
-              }))
-            )
-          }
-        >
-          Whose are likes
+        <div className="flex items-center justify-around">
+          <div
+            onClick={() =>
+              showModalLike(
+                quote.likes.map(
+                  ({ _id, firstName, lastName, email, role }) => ({
+                    _id,
+                    firstName,
+                    lastName,
+                    email,
+                    role: role || "",
+                  })
+                )
+              )
+            }
+          >
+            Whose are likes
+          </div>
+
+          <div   onClick={() =>
+              showModalDisLike(
+                quote.dislikes.map(
+                  ({ _id, firstName, lastName, email, role }) => ({
+                    _id,
+                    firstName,
+                    lastName,
+                    email,
+                    role: role || "",
+                  })
+                )
+              )
+            }>Whose are dislikes</div>
         </div>
       </div>
     </>
   ));
+
+  console.log(disLikesInfo)
 
   return (
     <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
@@ -278,6 +334,15 @@ const QuotePage = () => {
             </div>
           ))}
         </Modal>
+
+        {/* dislike */}
+        <Modal title="Whose are dislikes a quote.." open={isModalOpenDislike} onOk={handleOkDislike} onCancel={handleCancelDislike}>
+        {disLikesInfo?.map((info) => (
+            <div key={info._id}>
+              <p>{info.firstName}</p>
+            </div>
+          ))}
+      </Modal>
       </div>
     </div>
   );
