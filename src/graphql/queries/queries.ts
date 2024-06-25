@@ -1,6 +1,5 @@
 import { gql } from "../__generated__";
 
-
 export const GET_ALL_QUOTES = gql(`
    query getAllQuotes($title:String) {
     getAllQuotes(title: $title) {
@@ -13,11 +12,20 @@ export const GET_ALL_QUOTES = gql(`
             email
             role
         }
-        likes{
-         _id
-      }
-     dislikes{
+      likes{
         _id
+        firstName
+        lastName
+        email
+        role
+      }
+      dislikes{
+          _id
+        firstName
+        lastName
+        email
+        role
+
       }
     }
 }

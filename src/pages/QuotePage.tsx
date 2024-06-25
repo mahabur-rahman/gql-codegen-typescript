@@ -14,15 +14,16 @@ import { RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 
+
 const QuotePage = () => {
-  const [updateQuoteMutation] =
-    useMutation(UPDATE_QUOTE);
+  const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
 
   const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [currentQuoteId, setCurrentQuoteId] = useState("");
 
   const accessToken = useSelector(
@@ -116,7 +117,7 @@ const QuotePage = () => {
       await likeQuoteMutation({
         variables: { id: quoteId },
       });
-      await refetch(); 
+      await refetch();
     } catch (error) {
       console.error("Error liking quote:", error);
     }
@@ -127,11 +128,13 @@ const QuotePage = () => {
       await disLikeQuoteMutation({
         variables: { id: quoteId },
       });
-      await refetch(); 
+      await refetch();
     } catch (err) {
       console.log(err);
     }
   };
+
+
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
@@ -186,10 +189,7 @@ const QuotePage = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-around">
-        <div>All Likes</div>
-        <div>All Dislikes</div>
-        </div>
+   
       </div>
     </>
   ));

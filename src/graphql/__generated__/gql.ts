@@ -18,7 +18,7 @@ const documents = {
     "\n     mutation updateQuote($id:String!, $title:String!){\n        updateQuote(id:$id, title:$title){\n            _id\n            title\n        }\n}\n    ": types.UpdateQuoteDocument,
     "  \n mutation likeQuote($id:String!){\n    likeQuote(id:$id){\n          _id\n         title\n         likes{\n            _id\n         }\n     }\n}\n        \n ": types.LikeQuoteDocument,
     "\n        \nmutation dislikeQuote($id:String!){\n  dislikeQuote(id:$id){\n    _id\n    title\ndislikes{\n  _id\n}\n  }\n}       \n ": types.DislikeQuoteDocument,
-    "\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n        likes{\n         _id\n      }\n     dislikes{\n        _id\n      }\n    }\n}\n": types.GetAllQuotesDocument,
+    "\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n      likes{\n        _id\n        firstName\n        lastName\n        email\n        role\n      }\n      dislikes{\n          _id\n        firstName\n        lastName\n        email\n        role\n\n      }\n    }\n}\n": types.GetAllQuotesDocument,
 };
 
 /**
@@ -58,7 +58,7 @@ export function gql(source: "\n        \nmutation dislikeQuote($id:String!){\n  
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n        likes{\n         _id\n      }\n     dislikes{\n        _id\n      }\n    }\n}\n"): (typeof documents)["\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n        likes{\n         _id\n      }\n     dislikes{\n        _id\n      }\n    }\n}\n"];
+export function gql(source: "\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n      likes{\n        _id\n        firstName\n        lastName\n        email\n        role\n      }\n      dislikes{\n          _id\n        firstName\n        lastName\n        email\n        role\n\n      }\n    }\n}\n"): (typeof documents)["\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n      likes{\n        _id\n        firstName\n        lastName\n        email\n        role\n      }\n      dislikes{\n          _id\n        firstName\n        lastName\n        email\n        role\n\n      }\n    }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
