@@ -34,3 +34,33 @@ export const DELETE_QUOTE = gql(`
         }
 }
     `)
+
+
+
+export const LIKE_QUOTE = gql(`  
+ mutation likeQuote($id:String!){
+    likeQuote(id:$id){
+          _id
+         title
+         likes{
+            _id
+         }
+     }
+}
+        
+ `)
+
+
+
+export const DISLIKE_QUOTE = gql(`
+        
+mutation dislikeQuote($id:String!){
+  dislikeQuote(id:$id){
+    _id
+    title
+dislikes{
+  _id
+}
+  }
+}       
+ `)

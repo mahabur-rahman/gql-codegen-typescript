@@ -2,16 +2,25 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
 import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
-import { DELETE_QUOTE, UPDATE_QUOTE } from "../graphql/mutations/mutations";
+import {
+  DELETE_QUOTE,
+  DISLIKE_QUOTE,
+  LIKE_QUOTE,
+  UPDATE_QUOTE,
+} from "../graphql/mutations/mutations";
 import { Modal } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import React, { useState } from "react";
+import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 
 const QuotePage = () => {
-  const [updateQuoteMutation, { error: updateError }] =
+  const [updateQuoteMutation] =
     useMutation(UPDATE_QUOTE);
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
+  const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
+  const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
+
   const [updateQuoteTitle, setUpdateQuoteTitle] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentQuoteId, setCurrentQuoteId] = useState("");
@@ -101,45 +110,88 @@ const QuotePage = () => {
     setUpdateQuoteTitle(e.target.value);
   };
 
+  // like a quote
+  const likeQuote = async (quoteId: string) => {
+    try {
+      await likeQuoteMutation({
+        variables: { id: quoteId },
+      });
+      await refetch(); 
+    } catch (error) {
+      console.error("Error liking quote:", error);
+    }
+  };
+
+  const disLikeQuote = async (quoteId: string) => {
+    try {
+      await disLikeQuoteMutation({
+        variables: { id: quoteId },
+      });
+      await refetch(); 
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const quotes = data?.getAllQuotes?.map((quote) => (
-    <div key={quote._id} className="my-8">
-      <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
+    <>
+      <div key={quote._id} className="my-8">
+        <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
 
-      <div
-        aria-label=""
-        className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
-      >
-        {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
-      </div>
+        <div
+          aria-label=""
+          className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+        >
+          {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
+        </div>
 
-      <div
-        aria-label=""
-        className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
-      >
-        {quote?.createBy?.email}
-      </div>
+        <div
+          aria-label=""
+          className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+        >
+          {quote?.createBy?.email}
+        </div>
 
-      <div
-        aria-label=""
-        className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
-      >
-        {quote?.createBy?.role}
-      </div>
+        <div
+          aria-label=""
+          className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+        >
+          {quote?.createBy?.role}
+        </div>
 
-      {user?._id === quote.createBy._id && (
-        <div className="flex items-center justify-around bg-gray-50">
-          <div onClick={() => showModal(quote._id, quote.createBy._id)}>
-            <FaEdit />
+        {user?._id === quote.createBy._id && (
+          <div className="flex items-center justify-around bg-gray-50">
+            <div onClick={() => showModal(quote._id, quote.createBy._id)}>
+              <FaEdit />
+            </div>
+            <div
+              className="text-red-500"
+              onClick={() => handleDelete(quote._id, quote.createBy._id)}
+            >
+              <FaRegTrashAlt />
+            </div>
           </div>
-          <div
-            className="text-red-500"
-            onClick={() => handleDelete(quote._id, quote.createBy._id)}
-          >
-            <FaRegTrashAlt />
+        )}
+
+        <div className="flex items-center justify-around">
+          <div className="my-4 " onClick={() => likeQuote(quote._id)}>
+            <FaRegThumbsUp />
+            <span>
+              <span>{quote.likes.length}</span>
+            </span>
+          </div>
+          <div className="my-4" onClick={() => disLikeQuote(quote._id)}>
+            <FaRegThumbsDown />
+            <span>{quote.dislikes.length}</span>
           </div>
         </div>
-      )}
-    </div>
+
+        <div className="flex items-center justify-around">
+        <div>All Likes</div>
+        <div>All Dislikes</div>
+        </div>
+      </div>
+    </>
   ));
 
   return (

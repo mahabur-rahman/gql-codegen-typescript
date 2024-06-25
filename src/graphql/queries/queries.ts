@@ -13,6 +13,12 @@ export const GET_ALL_QUOTES = gql(`
             email
             role
         }
+        likes{
+         _id
+      }
+     dislikes{
+        _id
+      }
     }
 }
 `);
