@@ -72,3 +72,14 @@ export const DELETE_COMMENT = gql(`
         _id
     }
 }`);
+
+
+export const EDIT_COMMENT = gql(`
+mutation editComment($commentId:String!, $content:String!){
+    editComment(commentId:$commentId, content:$content){
+        _id
+        content
+    }
+ }
+    
+`)

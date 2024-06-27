@@ -2,12 +2,12 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_COMMENT_QUOTE_REF } from "../graphql/queries/queries";
 import { FC, useState } from "react";
 import WriteComment from "./WriteComment";
-import { CREATE_COMMENT, DELETE_COMMENT } from "../graphql/mutations/mutations";
+import { CREATE_COMMENT, DELETE_COMMENT, EDIT_COMMENT } from "../graphql/mutations/mutations";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
-import { FaRegTrashCan  } from "react-icons/fa6";
+import { FaRegTrashCan } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
-import { Modal, Input  } from 'antd';
+import { Modal, Input } from "antd";
 
 type CommentProps = {
   quoteId: string;
@@ -16,32 +16,46 @@ type CommentProps = {
 const FetchComment: FC<CommentProps> = ({ quoteId }) => {
   const { user } = useSelector((state: RootState) => state?.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentContent, setCurrentContent] = useState("");
+  const [currentCommentId, setCurrentCommentId] = useState("");
 
   const { data, loading, error, refetch } = useQuery(GET_COMMENT_QUOTE_REF, {
     variables: { quoteId },
   });
 
   const [deleteCommentById] = useMutation(DELETE_COMMENT);
-
+  const [editComment] = useMutation(EDIT_COMMENT);
   //   write comment here
   const [writeComment] = useMutation(CREATE_COMMENT);
 
   if (loading) return <p>Loading comments...</p>;
   if (error) return <p>Error loading comments: {error.message}</p>;
 
-
-  const showModal = () => {
+ 
+  const showModal = (commentId: string, content: string) => {
+    setCurrentCommentId(commentId);
+    setCurrentContent(content);
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleOk = async () => {
+    try {
+      await editComment({
+        variables: {
+          commentId: currentCommentId,
+          content: currentContent,
+        },
+      });
+      await refetch();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error editing comment:", error);
+    }
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
 
   // write comment
   const handleCommentSubmit = async (text: string) => {
@@ -74,12 +88,6 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
     }
   };
 
-
-  // edit comment 
-  const handleEditComment = async (commentId: string) =>{
-    console.log(commentId)
-  }
-
   return (
     <div>
       {data?.getCommentsByQuote?.map((comment) => (
@@ -102,19 +110,30 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
 
           {/* only comment owner can see edit comment */}
           {comment.commentedBy.some(({ _id }) => _id === user?._id) && (
-            <div className="flex items-center justify-center w-8 h-8 bg-red-200 rounded-full cursor-pointer" onClick={showModal}>
-              <FaEdit onClick={() => handleEditComment(comment._id)} />
+            <div
+              className="flex items-center justify-center w-8 h-8 bg-red-200 rounded-full cursor-pointer"
+              onClick={() => showModal(comment._id, comment?.content)}
+            >
+              <FaEdit />
             </div>
           )}
+
+          {/* edit modal */}
+          <Modal
+            title="Edit comment"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <Input
+              value={currentContent}
+              onChange={(e) => setCurrentContent(e.target.value)}
+            />
+          </Modal>
         </div>
       ))}
 
       <WriteComment onCommentSubmit={handleCommentSubmit} />
-
-      {/* edit modal */}
-      <Modal title="Edit comment" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-      <Input placeholder="Edit comment" />
-      </Modal>
     </div>
   );
 };
