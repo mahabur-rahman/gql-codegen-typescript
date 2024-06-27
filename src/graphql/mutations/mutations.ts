@@ -47,7 +47,6 @@ export const LIKE_QUOTE = gql(`
  `);
 
 export const DISLIKE_QUOTE = gql(`
-        
 mutation dislikeQuote($id:String!){
   dislikeQuote(id:$id){
     _id
@@ -60,10 +59,16 @@ dislikes{
  `);
 
 export const CREATE_COMMENT = gql(`
-    
  mutation createComment($createCommentDto: CreateCommentDto!){
     createComment(createCommentDto: $createCommentDto){
             _id
             content
         }
+}`);
+
+export const DELETE_COMMENT = gql(`
+ mutation deleteComment($commentId:String!){
+    deleteComment(commentId:$commentId){
+        _id
+    }
 }`);
