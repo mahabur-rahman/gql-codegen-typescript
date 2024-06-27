@@ -43,7 +43,7 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
       await editComment({
         variables: {
           commentId: currentCommentId,
-          content: currentContent,
+          content: currentContent, 
         },
       });
       await refetch();
