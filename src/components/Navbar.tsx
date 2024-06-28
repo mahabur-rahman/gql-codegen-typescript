@@ -7,6 +7,7 @@ import { setSearchQuery } from "../store/searchSlice";
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const {user} = useSelector((state: RootState) => state.auth)
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -83,8 +84,11 @@ export const Navbar = () => {
                   aria-label="Profile"
                   title="Profile"
                 >
-                  Profile
+                  Profile <span className="mx-5 text-red-600">
+                    {user?.firstName}
+                  </span>
                 </Link>
+
               </li>
               <li>
                 <button
