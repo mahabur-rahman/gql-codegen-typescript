@@ -88,6 +88,9 @@ export const Navbar = () => {
                     {user?.firstName}
                   </span>
                 </Link>
+                {user?._id && (
+                    <img src={user?.image || ''} alt="" />
+                )}
 
               </li>
               <li>

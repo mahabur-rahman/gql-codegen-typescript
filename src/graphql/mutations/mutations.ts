@@ -96,6 +96,7 @@ export const GOOGLE_LOGIN_MUTATION = gql(`
         firstName
         lastName
         email
+        image
         role
       }
     }
