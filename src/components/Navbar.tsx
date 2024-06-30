@@ -2,28 +2,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { logout } from "../store/authSlice";
-import { Input } from 'antd';
+import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
+import { googleLogout } from "@react-oauth/google";
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
-  const {user} = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+  // logout 
   const handleLogout = () => {
+    googleLogout();
     dispatch(logout());
+
     navigate("/signin");
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.trim(); // Trim whitespace from input
 
-    if (query !== '') {
+    if (query !== "") {
       dispatch(setSearchQuery(query));
-      navigate(`/quotes${query ? `?title=${encodeURIComponent(query)}` : ''}`);
+      navigate(`/quotes${query ? `?title=${encodeURIComponent(query)}` : ""}`);
     } else {
-      dispatch(setSearchQuery(''));
+      dispatch(setSearchQuery(""));
       navigate(`/quotes`);
     }
   };
@@ -84,14 +88,10 @@ export const Navbar = () => {
                   aria-label="Profile"
                   title="Profile"
                 >
-                  Profile <span className="mx-5 text-red-600">
-                    {user?.firstName}
-                  </span>
+                  Profile{" "}
+                  <span className="mx-5 text-red-600">{user?.firstName}</span>
                 </Link>
-                {user?._id && (
-                    <img src={user?.image || ''} alt="" />
-                )}
-
+                {user?._id && <img src={user?.image || ""} alt="" />}
               </li>
               <li>
                 <button
