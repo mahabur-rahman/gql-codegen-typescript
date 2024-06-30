@@ -1,9 +1,11 @@
+import React from "react";
 import { useLazyQuery, gql } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../store";
 import { login as loginAction } from "../store/authSlice";
+import GoogleSignIn from "../components/GoogleLogin";
 
 const LOGIN_USER = gql(`
   query($email: String! $password: String!) {
@@ -84,8 +86,16 @@ const Login = () => {
           onChange={handleInputChange}
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" className="p-3 bg-red-300">Login</button>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
       </form>
+
+      {/* login with google */}
+      <GoogleSignIn />
 
       {error && <p className="error">Error logging in: {error.message}</p>}
     </div>
