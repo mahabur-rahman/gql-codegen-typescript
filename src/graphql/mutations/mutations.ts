@@ -83,3 +83,21 @@ mutation editComment($commentId:String!, $content:String!){
  }
     
 `)
+
+
+
+// google singIn
+export const GOOGLE_LOGIN_MUTATION = gql(`
+  mutation GoogleLogin($token: String!) {
+    googleLogin(token: $token) {
+      token
+      user {
+        _id
+        firstName
+        lastName
+        email
+        role
+      }
+    }
+  }
+`); 
