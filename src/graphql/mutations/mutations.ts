@@ -1,5 +1,17 @@
 import { gql } from "../__generated__";
 
+export const CREATE_QUOTE = gql(`
+  mutation CreateQuote($createQuoteDto: CreateQuoteDto!) {
+    createQuote(createQuoteDto: $createQuoteDto) {
+      _id
+      title
+      images
+    }
+  }
+`);
+
+
+
 export const SIGN_UP = gql(`
 mutation SignUpUser($signUpDto:SignUpDto!){
     signUp(signUpDto:$signUpDto){

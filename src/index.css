@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-*{
-    margin: 0;
+* {
+  margin: 0;
 }
+
+
+#file-upload {
+    display: none;
+  }
+  .custom-file-upload {
+    display: inline-block;
+    cursor: pointer;
+  }
