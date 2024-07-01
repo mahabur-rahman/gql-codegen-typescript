@@ -43,6 +43,13 @@ query getCommentsByQuote($quoteId:String!){
       firstName
       lastName
     }
+    replies{
+      repliedBy{
+        _id
+        firstName
+      }
+      replyContent
+    }
   }
 }
   

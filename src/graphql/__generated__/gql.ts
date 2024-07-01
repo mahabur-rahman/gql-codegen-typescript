@@ -23,7 +23,7 @@ const documents = {
     "\nmutation editComment($commentId:String!, $content:String!){\n    editComment(commentId:$commentId, content:$content){\n        _id\n        content\n    }\n }\n    \n": types.EditCommentDocument,
     "\n  mutation GoogleLogin($token: String!) {\n    googleLogin(token: $token) {\n      token\n      user {\n        _id\n        firstName\n        lastName\n        email\n        image\n        role\n      }\n    }\n  }\n": types.GoogleLoginDocument,
     "\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n      likes{\n        _id\n        firstName\n        lastName\n        email\n        role\n      }\n      dislikes{\n          _id\n        firstName\n        lastName\n        email\n        role\n\n      }\n    }\n}\n": types.GetAllQuotesDocument,
-    "\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n  }\n}\n  \n": types.GetCommentsByQuoteDocument,
+    "\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n    replies{\n      repliedBy{\n        _id\n        firstName\n      }\n      replyContent\n    }\n  }\n}\n  \n": types.GetCommentsByQuoteDocument,
 };
 
 /**
@@ -83,7 +83,7 @@ export function gql(source: "\n   query getAllQuotes($title:String) {\n    getAl
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n  }\n}\n  \n"): (typeof documents)["\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n  }\n}\n  \n"];
+export function gql(source: "\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n    replies{\n      repliedBy{\n        _id\n        firstName\n      }\n      replyContent\n    }\n  }\n}\n  \n"): (typeof documents)["\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n    replies{\n      repliedBy{\n        _id\n        firstName\n      }\n      replyContent\n    }\n  }\n}\n  \n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

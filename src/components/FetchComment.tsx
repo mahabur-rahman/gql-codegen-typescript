@@ -2,12 +2,18 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_COMMENT_QUOTE_REF } from "../graphql/queries/queries";
 import { FC, useState } from "react";
 import WriteComment from "./WriteComment";
-import { CREATE_COMMENT, DELETE_COMMENT, EDIT_COMMENT } from "../graphql/mutations/mutations";
+import {
+  CREATE_COMMENT,
+  DELETE_COMMENT,
+  EDIT_COMMENT,
+} from "../graphql/mutations/mutations";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import { Modal, Input } from "antd";
+import ReplyComment from "./ReplyComment";
+import { Comment } from "../graphql/__generated__/graphql";
 
 type CommentProps = {
   quoteId: string;
@@ -23,6 +29,8 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
     variables: { quoteId },
   });
 
+ 
+
   const [deleteCommentById] = useMutation(DELETE_COMMENT);
   const [editComment] = useMutation(EDIT_COMMENT);
   //   write comment here
@@ -31,7 +39,6 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
   if (loading) return <p>Loading comments...</p>;
   if (error) return <p>Error loading comments: {error.message}</p>;
 
- 
   const showModal = (commentId: string, content: string) => {
     setCurrentCommentId(commentId);
     setCurrentContent(content);
@@ -43,7 +50,7 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
       await editComment({
         variables: {
           commentId: currentCommentId,
-          content: currentContent, 
+          content: currentContent,
         },
       });
       await refetch();
@@ -91,46 +98,56 @@ const FetchComment: FC<CommentProps> = ({ quoteId }) => {
   return (
     <div>
       {data?.getCommentsByQuote?.map((comment) => (
-        <div key={comment._id} className="flex justify-between">
-          <p>{comment.content}</p>
-          {/* Example of mapping through commentedBy */}
-          <ul>
-            {comment.commentedBy.map((user) => (
-              <li key={user?._id}>
-                {user?.firstName} - {user?.lastName}
-              </li>
-            ))}
-          </ul>
-          {/* only comment owner can see trash comment */}
-          {comment.commentedBy.some(({ _id }) => _id === user?._id) && (
-            <div className="flex items-center justify-center w-8 h-8 bg-red-200 rounded-full cursor-pointer">
-              <FaRegTrashCan onClick={() => handleDeleteComment(comment._id)} />
-            </div>
-          )}
+        <>
+          <div key={comment._id} className="flex justify-between">
+            <p>{comment.content}</p>
+            {/* Example of mapping through commentedBy */}
+            <ul>
+              {comment.commentedBy.map((user) => (
+                <li key={user?._id}>
+                  {user?.firstName}
+                </li>
+              ))}
+            </ul>
 
-          {/* only comment owner can see edit comment */}
-          {comment.commentedBy.some(({ _id }) => _id === user?._id) && (
-            <div
-              className="flex items-center justify-center w-8 h-8 bg-red-200 rounded-full cursor-pointer"
-              onClick={() => showModal(comment._id, comment?.content)}
+            {/* only comment owner can see trash comment */}
+            {comment.commentedBy.some(({ _id }) => _id === user?._id) && (
+              <div className="flex items-center justify-center w-8 h-8 bg-red-200 rounded-full cursor-pointer">
+                <FaRegTrashCan
+                  onClick={() => handleDeleteComment(comment._id)}
+                />
+              </div>
+            )}
+
+            {/* only comment owner can see edit comment */}
+            {comment.commentedBy.some(({ _id }) => _id === user?._id) && (
+              <div
+                className="flex items-center justify-center w-8 h-8 bg-red-200 rounded-full cursor-pointer"
+                onClick={() => showModal(comment._id, comment?.content)}
+              >
+                <FaEdit />
+              </div>
+            )}
+
+            {/* edit modal */}
+            <Modal
+              title="Edit comment"
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
             >
-              <FaEdit />
-            </div>
-          )}
+              <Input
+                value={currentContent}
+                onChange={(e) => setCurrentContent(e.target.value)}
+              />
+            </Modal>
 
-          {/* edit modal */}
-          <Modal
-            title="Edit comment"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            <Input
-              value={currentContent}
-              onChange={(e) => setCurrentContent(e.target.value)}
-            />
-          </Modal>
-        </div>
+
+            {/* reply comment */}
+            <ReplyComment comment={comment as Comment} />
+          </div>
+
+        </>
       ))}
 
       <WriteComment onCommentSubmit={handleCommentSubmit} />
