@@ -33,8 +33,6 @@ const GoogleSignIn = () => {
         variables: { token: googleToken },
       });
       console.log("Login successful:", data);
-
-      // TODO LOCAL STORAGE 
     } catch (error) {
       console.error("Login error:", error);
     }

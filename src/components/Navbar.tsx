@@ -21,7 +21,7 @@ export const Navbar = () => {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value.trim(); // Trim whitespace from input
+    const query = e.target.value.trim(); 
 
     if (query !== "") {
       dispatch(setSearchQuery(query));
@@ -81,7 +81,7 @@ export const Navbar = () => {
         <ul className="flex items-center hidden space-x-8 lg:flex">
           {accessToken ? (
             <>
-              <li>
+              <li className="flex items-center">
                 <Link
                   to="/profile"
                   className="inline-flex items-center justify-center h-12 px-6 font-medium tracking-wide text-black transition duration-200 bg-red-100 rounded shadow-md bg-deep-purple-accent-400 focus:shadow-outline focus:outline-none"
@@ -91,7 +91,7 @@ export const Navbar = () => {
                   Profile{" "}
                   <span className="mx-5 text-red-600">{user?.firstName}</span>
                 </Link>
-                {user?._id && <img src={user?.image || ""} alt="" />}
+                {user?._id && <img src={user?.image || ""} alt="" className="object-cover w-12 h-12 rounded-full" />}
               </li>
               <li>
                 <button

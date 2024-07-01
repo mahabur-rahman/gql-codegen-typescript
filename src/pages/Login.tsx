@@ -17,6 +17,7 @@ const LOGIN_USER = gql(`
         lastName
         email
         password
+        image
         role
       }
     }
