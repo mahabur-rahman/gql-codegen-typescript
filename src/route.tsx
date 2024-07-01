@@ -1,3 +1,4 @@
+import CreateFeed from "./pages/CreateFeed";
 import { Home } from "./pages/Home";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
@@ -10,5 +11,5 @@ export const routes = [
   { path: "/signin", element: <Login /> },
   { path: "/quotes", element: <QuotePage /> },
   { path: "/profile", element: <Profile /> },
-  //   { path: "/create-quote", element: <CreateQuote /> },
+    { path: "/create-feed", element: <CreateFeed /> },
 ];

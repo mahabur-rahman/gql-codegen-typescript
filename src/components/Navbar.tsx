@@ -73,7 +73,17 @@ export const Navbar = () => {
                 title="Our product"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
-                Quotes
+         All Feeds
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/create-feed"
+                aria-label="Our product"
+                title="Our product"
+                className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
+              >
+               Create Feed
               </Link>
             </li>
           </ul>
