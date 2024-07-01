@@ -202,11 +202,10 @@ const QuotePage = () => {
     setIsModalOpenDislike(false);
   };
 
-
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
       <div key={quote._id} className="my-8">
-        <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} -</h6>
+        <h6 className="mb-3 text-xl font-bold leading-5">{quote.title} </h6>
 
         <div
           aria-label=""
@@ -222,6 +221,14 @@ const QuotePage = () => {
           {quote?.createBy?.email}
         </div>
 
+        {quote.images?.map((item) => (
+          <div
+            aria-label=""
+            className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+          >
+            <img src={item} alt="Quote images" />
+          </div>
+        ))}
         <div
           aria-label=""
           className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"

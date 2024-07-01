@@ -6,6 +6,7 @@ export const GET_ALL_QUOTES = gql(`
     getAllQuotes(title: $title) {
         _id
         title
+        images
         createBy {
             _id
             firstName
