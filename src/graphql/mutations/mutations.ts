@@ -102,3 +102,14 @@ export const GOOGLE_LOGIN_MUTATION = gql(`
     }
   }
 `); 
+
+// reply comment 
+export const REPLY_COMMENT = gql(`
+  mutation ReplyToComment($parentCommentId: String!, $replyContent: String!) {
+  replyToComment(parentCommentId: $parentCommentId, replyContent: $replyContent) {
+    _id
+    content
+  }
+}
+
+`)

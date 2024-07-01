@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, Input } from "antd";
+import { useMutation } from "@apollo/client";
 import { Comment, Reply } from "../graphql/__generated__/graphql";
+import { REPLY_COMMENT } from "../graphql/mutations/mutations";
+import { GET_COMMENT_QUOTE_REF } from "../graphql/queries/queries";
 
 type ReplyCommentProps = {
   comment: Comment;
@@ -8,20 +11,42 @@ type ReplyCommentProps = {
 
 const ReplyComment: React.FC<ReplyCommentProps> = ({ comment }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [replyContent, setReplyContent] = useState("");
+
+  const [replyToComment] = useMutation(REPLY_COMMENT, {
+    refetchQueries: [
+      { query: GET_COMMENT_QUOTE_REF, variables: { commentId: comment._id } },
+    ],
+  });
 
   const showModal = () => {
     setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  console.log(comment);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReplyContent(e.target.value);
+  };
+
+  const handleOk = async () => {
+    try {
+      await replyToComment({
+        variables: {
+          parentCommentId: comment._id,
+          replyContent,
+        },
+      });
+
+      setReplyContent("");
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error replying to comment:", error);
+    }
+  };
 
   return (
     <>
@@ -35,11 +60,21 @@ const ReplyComment: React.FC<ReplyCommentProps> = ({ comment }) => {
         onCancel={handleCancel}
       >
         {comment?.replies?.map((reply: Reply) => (
-          <div className="flex justify-between" key={reply.repliedBy.__typename}>
+          <div
+            className="flex justify-between"
+            key={reply.repliedBy.__typename}
+          >
             <p>{reply?.replyContent}</p>
             <p className="text-red-500">{reply?.repliedBy.firstName}</p>
           </div>
         ))}
+
+        {/* Reply input field */}
+        <Input
+          placeholder="Reply comment.."
+          value={replyContent}
+          onChange={handleInputChange}
+        />
       </Modal>
     </>
   );
