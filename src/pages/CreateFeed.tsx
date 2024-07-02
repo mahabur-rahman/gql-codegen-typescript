@@ -2,14 +2,19 @@ import { Input } from "antd";
 import { useState, ChangeEvent } from "react";
 import { useMutation } from '@apollo/client';
 import { CREATE_QUOTE } from "../graphql/mutations/mutations";
+import { GET_ALL_QUOTES } from "../graphql/queries/queries";
 
 
-function App() {
+const  CreateFeed = () =>{
   const [images, setImages] = useState<File[]>([]);
   const [urls, setUrls] = useState<string[]>([]);
   const [title, setTitle] = useState<string>("");
   const [showCreateButton, setShowCreateButton] = useState<boolean>(false);
-  const [createQuote] = useMutation(CREATE_QUOTE);
+  const [createQuote] = useMutation(CREATE_QUOTE, {
+    refetchQueries: [{
+      query: GET_ALL_QUOTES,
+    }]
+  });
 
   const uploadImages = async (files: File[]) => {
     const newUrls: string[] = [];
@@ -70,7 +75,7 @@ function App() {
     }
   };
 
-  console.log("URLs", urls);
+
 
   return (
     <>
@@ -115,4 +120,4 @@ function App() {
   );
 }
 
-export default App;
+export default CreateFeed;
