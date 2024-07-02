@@ -3,7 +3,7 @@ import { useState, ChangeEvent } from "react";
 import { useMutation } from '@apollo/client';
 import { CREATE_QUOTE } from "../graphql/mutations/mutations";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
-
+import { useNavigate } from "react-router-dom";
 
 const  CreateFeed = () =>{
   const [images, setImages] = useState<File[]>([]);
@@ -15,6 +15,8 @@ const  CreateFeed = () =>{
       query: GET_ALL_QUOTES,
     }]
   });
+
+  const navigate = useNavigate();
 
   const uploadImages = async (files: File[]) => {
     const newUrls: string[] = [];
@@ -69,6 +71,7 @@ const  CreateFeed = () =>{
       });
       console.log('Quote created:', data);
       alert('Quote created successfully!');
+      navigate("/quotes");
     } catch (error) {
       console.error('Error creating quote:', error);
       alert('Error creating quote.');

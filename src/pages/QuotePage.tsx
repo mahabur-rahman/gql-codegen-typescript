@@ -62,6 +62,7 @@ const QuotePage = () => {
     variables: { title: title || undefined },
   });
 
+  console.log("data : ", data);
   // for modal
   const showModal = (quoteId: string, createById: string) => {
     if (!accessToken) {
@@ -229,6 +230,20 @@ const QuotePage = () => {
             <img src={item} alt="Quote images" />
           </div>
         ))}
+
+        {quote.videos?.map((item, index) => (
+          <div
+            key={index}
+            aria-label=""
+            className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+          >
+                <video autoPlay muted width="250">
+              <source src={item} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        ))}
+
         <div
           aria-label=""
           className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"

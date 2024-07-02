@@ -6,6 +6,7 @@ export const CREATE_QUOTE = gql(`
       _id
       title
       images
+      videos
     }
   }
 `);
