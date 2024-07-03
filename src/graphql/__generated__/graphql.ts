@@ -205,6 +205,7 @@ export type Reply = {
 export type SignUpDto = {
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
+  image?: InputMaybe<Scalars['String']['input']>;
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   quotes?: InputMaybe<Array<Scalars['String']['input']>>;

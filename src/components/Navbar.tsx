@@ -6,6 +6,7 @@ import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
 
+
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
@@ -17,6 +18,7 @@ export const Navbar = () => {
     googleLogout();
     dispatch(logout());
 
+  
     navigate("/signin");
   };
 
