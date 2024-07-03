@@ -20,6 +20,7 @@ mutation SignUpUser($signUpDto:SignUpDto!){
         email
         password
         role
+        image
     }
 }
     

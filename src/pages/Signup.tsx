@@ -9,6 +9,7 @@ interface FieldType {
   lastName: string;
   email: string;
   password: string;
+  image?: File;
 }
 
 const Signup = () => {
@@ -17,9 +18,9 @@ const Signup = () => {
 
   const [signUp, { loading }] = useMutation(SIGN_UP, {
     onCompleted: () => {
-      // Reset form fields on successful signup
       form.resetFields();
       message.success("Sign up successful!");
+      navigate('/signin');
     },
     onError: (error) => {
       message.error("Sign up failed!");
@@ -29,9 +30,26 @@ const Signup = () => {
 
   const onFinish = async (values: FieldType) => {
     try {
-      const res = await signUp({ variables: { signUpDto: values } });
+      const { image, ...restValues } = values;
+      
+      // Upload image to Cloudinary if selected
+      let imageUrl;
+      if (image) {
+        const formData = new FormData();
+        formData.append("file", image);
+        formData.append("upload_preset", "reactNestGql");
+        
+        const response = await fetch("https://api.cloudinary.com/v1_1/dowpna0vx/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        imageUrl = data.secure_url;
+      }
+
+      const res = await signUp({ variables: { signUpDto: { ...restValues, image: imageUrl } } });
       if(res) {
-        navigate('/signin')
+        navigate('/signin');
       }
     } catch (err) {
       console.error("Error:", err);
@@ -87,6 +105,16 @@ const Signup = () => {
         ]}
       >
         <Input.Password />
+      </Form.Item>
+
+      <Form.Item
+        label="Profile Image"
+        name="image"
+        rules={[{ required: true, message: "Please upload your profile image!" }]}
+        valuePropName="fileList"
+        getValueFromEvent={(e: any) => e.fileList}
+      >
+        <input type="file" accept="image/*" onChange={(e) => form.setFieldsValue({ image: e.target.files?.[0] })} />
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
