@@ -1,5 +1,5 @@
-// import {gql} from '@apollo/client'
 import { gql } from "../__generated__";
+
 
 export const GET_ALL_QUOTES = gql(`
    query getAllQuotes($title:String) {
@@ -57,3 +57,5 @@ query getCommentsByQuote($quoteId:String!){
 }
   
 `)
+
+
