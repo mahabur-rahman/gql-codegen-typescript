@@ -56,7 +56,9 @@ const Login = () => {
 
   useEffect(() => {
     if (data && data.login) {
+    
       dispatch(loginAction(data.login));
+      window.location.reload()
 
       navigate("/");
     } else if (error) {

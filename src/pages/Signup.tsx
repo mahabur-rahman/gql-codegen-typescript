@@ -3,6 +3,7 @@ import { Button, Form, Input, message } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import { SIGN_UP } from "../graphql/mutations/mutations";
 import { useNavigate } from "react-router-dom";
+import { ChangeEvent } from "react";
 
 interface FieldType {
   firstName: string;
@@ -11,6 +12,10 @@ interface FieldType {
   password: string;
   image?: File;
 }
+
+type UploadChangeEvent = ChangeEvent<HTMLInputElement> & {
+  fileList: FileList | null; // Add fileList property to handle file uploads
+};
 
 const Signup = () => {
   const [form] = useForm();
@@ -112,7 +117,7 @@ const Signup = () => {
         name="image"
         rules={[{ required: true, message: "Please upload your profile image!" }]}
         valuePropName="fileList"
-        getValueFromEvent={(e: any) => e.fileList}
+        getValueFromEvent={(e: UploadChangeEvent) => e.fileList}
       >
         <input type="file" accept="image/*" onChange={(e) => form.setFieldsValue({ image: e.target.files?.[0] })} />
       </Form.Item>
