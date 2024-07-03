@@ -8,7 +8,7 @@ import {
   LIKE_QUOTE,
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
-import { Modal } from "antd";
+import { Modal, Rate, Flex } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import React, { useState } from "react";
@@ -45,6 +45,7 @@ const QuotePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenLike, setIsModalOpenLike] = useState(false);
   const [isModalOpenDislike, setIsModalOpenDislike] = useState(false);
+  const [value, setValue] = useState(3);
 
   const [currentQuoteId, setCurrentQuoteId] = useState("");
 
@@ -62,7 +63,6 @@ const QuotePage = () => {
     variables: { title: title || undefined },
   });
 
-  console.log("data : ", data);
   // for modal
   const showModal = (quoteId: string, createById: string) => {
     if (!accessToken) {
@@ -215,6 +215,11 @@ const QuotePage = () => {
           {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
         </div>
 
+        {/* rating */}
+        <Flex gap="middle" vertical>
+          <Rate value={quote.rating} />
+        </Flex>
+
         <div
           aria-label=""
           className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
@@ -237,7 +242,7 @@ const QuotePage = () => {
             aria-label=""
             className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
           >
-                <video autoPlay muted width="250">
+            <video autoPlay muted width="250">
               <source src={item} type="video/mp4" />
               Your browser does not support the video tag.
             </video>

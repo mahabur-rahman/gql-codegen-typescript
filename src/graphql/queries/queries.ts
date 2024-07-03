@@ -8,6 +8,7 @@ export const GET_ALL_QUOTES = gql(`
         title
         images
         videos
+        rating
         createBy {
             _id
             firstName

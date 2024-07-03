@@ -5,31 +5,31 @@ import { CREATE_QUOTE } from "../graphql/mutations/mutations";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
 import { useNavigate } from "react-router-dom";
 
-const  CreateFeed = () =>{
+const CreateFeed = () => {
   const [images, setImages] = useState<File[]>([]);
-  const [urls, setUrls] = useState<string[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [title, setTitle] = useState<string>("");
-  const [showCreateButton, setShowCreateButton] = useState<boolean>(false);
   const [createQuote] = useMutation(CREATE_QUOTE, {
-    refetchQueries: [{
-      query: GET_ALL_QUOTES,
-    }]
+    refetchQueries: [{ query: GET_ALL_QUOTES }],
   });
 
   const navigate = useNavigate();
 
-  const uploadImages = async (files: File[]) => {
+  const uploadFiles = async (files: File[], type: "image" | "video") => {
     const newUrls: string[] = [];
 
-    for (const image of files) {
+    for (const file of files) {
       const data = new FormData();
-      data.append("file", image);
+      data.append("file", file);
       data.append("upload_preset", "reactNestGql");
       data.append("cloud_name", "dowpna0vx");
+      data.append("resource_type", type);
 
       try {
         const res = await fetch(
-          "https://api.cloudinary.com/v1_1/dowpna0vx/image/upload",
+          `https://api.cloudinary.com/v1_1/dowpna0vx/${type}/upload`,
           {
             method: "POST",
             body: data,
@@ -39,20 +39,26 @@ const  CreateFeed = () =>{
         const cloudData = await res.json();
         newUrls.push(cloudData.url);
       } catch (error) {
-        console.log(error);
+        console.error(`Error uploading ${type}:`, error);
       }
     }
 
-    setUrls((prevUrls) => [...prevUrls, ...newUrls]);
-    setShowCreateButton(true); // Show the button after images are uploaded
-    console.log(newUrls);
+    if (type === "image") {
+      setImageUrls((prevUrls) => [...prevUrls, ...newUrls]);
+    } else {
+      setVideoUrls((prevUrls) => [...prevUrls, ...newUrls]);
+    }
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, type: "image" | "video") => {
     const files = Array.from(e.target.files || []);
-    setImages(files);
-    setShowCreateButton(false); // Hide the button while uploading
-    uploadImages(files);
+    if (type === "image") {
+      setImages(files);
+      uploadFiles(files, "image");
+    } else {
+      setVideos(files);
+      uploadFiles(files, "video");
+    }
   };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +71,8 @@ const  CreateFeed = () =>{
         variables: {
           createQuoteDto: {
             title,
-            images: urls,
+            images: imageUrls,
+            videos: videoUrls,
           },
         },
       });
@@ -78,8 +85,6 @@ const  CreateFeed = () =>{
     }
   };
 
-
-
   return (
     <>
       <label>Title :</label>
@@ -87,7 +92,7 @@ const  CreateFeed = () =>{
       <div className="flex items-center justify-center mt-4">
         <div className="bg-[#2C3A47] p-10 rounded-xl">
           <div className="flex justify-center mb-5 input">
-            <label htmlFor="file-upload" className="custom-file-upload">
+            <label htmlFor="image-upload" className="custom-file-upload">
               {images.length > 0 ? (
                 images.map((image, index) => (
                   <img
@@ -105,16 +110,48 @@ const  CreateFeed = () =>{
               )}
             </label>
             <input
-              id="file-upload"
+              id="image-upload"
               className="text-white"
               type="file"
               multiple
-              onChange={handleFileChange}
+              accept="image/*"
+              onChange={(e) => handleFileChange(e, "image")}
             />
           </div>
         </div>
       </div>
-      {showCreateButton && (
+      <div className="flex items-center justify-center mt-4">
+        <div className="bg-[#2C3A47] p-10 rounded-xl">
+          <div className="flex justify-center mb-5 input">
+            <label htmlFor="video-upload" className="custom-file-upload">
+              {videos.length > 0 ? (
+                videos.map((video, index) => (
+                  <video
+                    key={index}
+                    className="w-72 lg:w-96 rounded-xl"
+                    src={URL.createObjectURL(video)}
+                    controls
+                  />
+                ))
+              ) : (
+                <img
+                  src="https://cdn-icons-png.flaticon.com/128/1665/1665680.png"
+                  className="w-20 h-20"
+                />
+              )}
+            </label>
+            <input
+              id="video-upload"
+              className="text-white"
+              type="file"
+              multiple
+              accept="video/*"
+              onChange={(e) => handleFileChange(e, "video")}
+            />
+          </div>
+        </div>
+      </div>
+      {(imageUrls.length > 0 || videoUrls.length > 0) && (
         <button className="bg-[#FC427B] mt-4" onClick={handleCreateQuote}>
           Create Quote
         </button>
