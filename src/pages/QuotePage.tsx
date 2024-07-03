@@ -5,6 +5,7 @@ import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import {
   DELETE_QUOTE,
   DISLIKE_QUOTE,
+  INCREASE_RATING,
   LIKE_QUOTE,
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
@@ -20,6 +21,7 @@ const QuotePage = () => {
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
+  const [increaseRatingMutation] = useMutation(INCREASE_RATING)
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -45,7 +47,6 @@ const QuotePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenLike, setIsModalOpenLike] = useState(false);
   const [isModalOpenDislike, setIsModalOpenDislike] = useState(false);
-  const [value, setValue] = useState(3);
 
   const [currentQuoteId, setCurrentQuoteId] = useState("");
 
@@ -203,6 +204,19 @@ const QuotePage = () => {
     setIsModalOpenDislike(false);
   };
 
+  // rating 
+  const handleRatingChange = async (quoteId: string, rating: number) => {
+    try {
+      await increaseRatingMutation({
+        variables: { id: quoteId, rating },
+      });
+      await refetch();
+    } catch (error) {
+      console.error('Error increasing rating:', error);
+    }
+  };
+  
+
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
       <div key={quote._id} className="my-8">
@@ -216,9 +230,13 @@ const QuotePage = () => {
         </div>
 
         {/* rating */}
-        <Flex gap="middle" vertical>
-          <Rate value={quote.rating} />
-        </Flex>
+     {/* Rating */}
+     <Flex gap="middle" vertical>
+      <Rate
+        value={quote.rating}
+        onChange={(value) => handleRatingChange(quote._id, value)}
+      />
+    </Flex>
 
         <div
           aria-label=""

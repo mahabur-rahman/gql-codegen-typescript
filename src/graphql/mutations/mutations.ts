@@ -11,8 +11,6 @@ export const CREATE_QUOTE = gql(`
   }
 `);
 
-
-
 export const SIGN_UP = gql(`
 mutation SignUpUser($signUpDto:SignUpDto!){
     signUp(signUpDto:$signUpDto){
@@ -86,7 +84,6 @@ export const DELETE_COMMENT = gql(`
     }
 }`);
 
-
 export const EDIT_COMMENT = gql(`
 mutation editComment($commentId:String!, $content:String!){
     editComment(commentId:$commentId, content:$content){
@@ -95,9 +92,7 @@ mutation editComment($commentId:String!, $content:String!){
     }
  }
     
-`)
-
-
+`);
 
 // google singIn
 export const GOOGLE_LOGIN_MUTATION = gql(`
@@ -114,9 +109,9 @@ export const GOOGLE_LOGIN_MUTATION = gql(`
       }
     }
   }
-`); 
+`);
 
-// reply comment 
+// reply comment
 export const REPLY_COMMENT = gql(`
   mutation ReplyToComment($parentCommentId: String!, $replyContent: String!) {
   replyToComment(parentCommentId: $parentCommentId, replyContent: $replyContent) {
@@ -125,4 +120,15 @@ export const REPLY_COMMENT = gql(`
   }
 }
 
-`)
+`);
+
+// rating
+export const INCREASE_RATING = gql(`
+  mutation IncreaseRating($id: String!, $rating: Float!) {
+    increaseRating(id: $id, rating: $rating) {
+      _id
+      title
+      rating
+    }
+  }
+`);
