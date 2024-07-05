@@ -1,14 +1,21 @@
-import  { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 
-export default function Contact() {
-  const [formState, setFormState] = useState({
+interface FormState {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+const Contact: React.FC = () => {
+  const [formState, setFormState] = useState<FormState>({
     name: '',
     email: '',
     subject: '',
     message: ''
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState({
       ...formState,
@@ -16,10 +23,18 @@ export default function Contact() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission, e.g., send data to backend
+
     console.log(formState);
+
+    // Clear the form fields after submission
+    setFormState({
+      name: '',
+      email: '',
+      subject: '',
+      message: ''
+    });
   };
 
   return (
@@ -101,3 +116,5 @@ export default function Contact() {
     </>
   );
 }
+
+export default Contact;

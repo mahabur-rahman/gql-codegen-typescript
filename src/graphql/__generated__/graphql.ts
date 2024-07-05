@@ -16,11 +16,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type AddressInput = {
-  address: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-};
-
 export type Comment = {
   __typename?: 'Comment';
   _id: Scalars['ID']['output'];
@@ -42,11 +37,6 @@ export type CreateQuoteDto = {
   videos?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-export type EmailResponse = {
-  __typename?: 'EmailResponse';
-  success: Scalars['Boolean']['output'];
-};
-
 export type LoginResponseType = {
   __typename?: 'LoginResponseType';
   token: Scalars['String']['output'];
@@ -66,7 +56,7 @@ export type Mutation = {
   increaseRating: Quote;
   likeQuote: Quote;
   replyToComment: Comment;
-  sendEmail: EmailResponse;
+  sendEmail: Scalars['Boolean']['output'];
   signUp: User;
   updateQuote: Quote;
   updateUser: User;
@@ -219,12 +209,10 @@ export type Reply = {
 };
 
 export type SendEmailDto = {
-  from?: InputMaybe<AddressInput>;
-  html: Scalars['String']['input'];
-  placeholderReplacement?: InputMaybe<Scalars['String']['input']>;
-  recipients: Array<AddressInput>;
+  email: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+  name: Scalars['String']['input'];
   subject: Scalars['String']['input'];
-  text?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SignUpDto = {
