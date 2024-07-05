@@ -6,24 +6,22 @@ import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
 
-
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // logout 
+  // logout
   const handleLogout = () => {
     googleLogout();
     dispatch(logout());
 
-  
     navigate("/signin");
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value.trim(); 
+    const query = e.target.value.trim();
 
     if (query !== "") {
       dispatch(setSearchQuery(query));
@@ -75,7 +73,7 @@ export const Navbar = () => {
                 title="Our product"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
-         All Feeds
+                All Feeds
               </Link>
             </li>
             <li>
@@ -85,9 +83,20 @@ export const Navbar = () => {
                 title="Our product"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
-               Create Feed
+                Create Feed
               </Link>
             </li>
+
+            <li>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center h-12 px-6 font-medium tracking-wide text-black transition duration-200 rounded bg-deep-purple-accent-400 focus:shadow-outline focus:outline-none"
+                  aria-label="Sign up"
+                  title="Sign up"
+                >
+                  Contact
+                </Link>
+              </li>
           </ul>
         </div>
         <ul className="flex items-center hidden space-x-8 lg:flex">
@@ -103,7 +112,13 @@ export const Navbar = () => {
                   Profile{" "}
                   <span className="mx-5 text-red-600">{user?.firstName}</span>
                 </Link>
-                {user?._id && <img src={user?.image || ""} alt="" className="object-cover w-12 h-12 rounded-full" />}
+                {user?._id && (
+                  <img
+                    src={user?.image || ""}
+                    alt=""
+                    className="object-cover w-12 h-12 rounded-full"
+                  />
+                )}
               </li>
               <li>
                 <button

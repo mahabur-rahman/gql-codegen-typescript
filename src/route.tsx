@@ -1,3 +1,4 @@
+import Contact from "./pages/Contact";
 import CreateFeed from "./pages/CreateFeed";
 import { Home } from "./pages/Home";
 import Login from "./pages/Login";
@@ -12,4 +13,5 @@ export const routes = [
   { path: "/quotes", element: <QuotePage /> },
   { path: "/profile", element: <Profile /> },
     { path: "/create-feed", element: <CreateFeed /> },
+    { path: "/contact", element: <Contact /> },
 ];
