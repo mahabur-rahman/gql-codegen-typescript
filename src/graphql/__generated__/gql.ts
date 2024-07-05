@@ -25,6 +25,7 @@ const documents = {
     "\n  mutation GoogleLogin($token: String!) {\n    googleLogin(token: $token) {\n      token\n      user {\n        _id\n        firstName\n        lastName\n        email\n        image\n        role\n      }\n    }\n  }\n": types.GoogleLoginDocument,
     "\n  mutation ReplyToComment($parentCommentId: String!, $replyContent: String!) {\n  replyToComment(parentCommentId: $parentCommentId, replyContent: $replyContent) {\n    _id\n    content\n  }\n}\n\n": types.ReplyToCommentDocument,
     "\n  mutation IncreaseRating($id: String!, $rating: Float!) {\n    increaseRating(id: $id, rating: $rating) {\n      _id\n      title\n      rating\n    }\n  }\n": types.IncreaseRatingDocument,
+    "\n  mutation SendEmail($sendEmailInput: SendEmailDto!) {\n    sendEmail(sendEmailInput: $sendEmailInput)\n  }\n": types.SendEmailDocument,
     "\n   query getAllQuotes($title:String) {\n    getAllQuotes(title: $title) {\n        _id\n        title\n        images\n        videos\n        rating\n        createBy {\n            _id\n            firstName\n            lastName\n            email\n            role\n        }\n      likes{\n        _id\n        firstName\n        lastName\n        email\n        role\n      }\n      dislikes{\n          _id\n        firstName\n        lastName\n        email\n        role\n\n      }\n    }\n}\n": types.GetAllQuotesDocument,
     "\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n    replies{\n      repliedBy{\n        _id\n        firstName\n      }\n      replyContent\n    }\n  }\n}\n  \n": types.GetCommentsByQuoteDocument,
 };
@@ -91,6 +92,10 @@ export function gql(source: "\n  mutation ReplyToComment($parentCommentId: Strin
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  mutation IncreaseRating($id: String!, $rating: Float!) {\n    increaseRating(id: $id, rating: $rating) {\n      _id\n      title\n      rating\n    }\n  }\n"): (typeof documents)["\n  mutation IncreaseRating($id: String!, $rating: Float!) {\n    increaseRating(id: $id, rating: $rating) {\n      _id\n      title\n      rating\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation SendEmail($sendEmailInput: SendEmailDto!) {\n    sendEmail(sendEmailInput: $sendEmailInput)\n  }\n"): (typeof documents)["\n  mutation SendEmail($sendEmailInput: SendEmailDto!) {\n    sendEmail(sendEmailInput: $sendEmailInput)\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

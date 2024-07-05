@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useMutation } from '@apollo/client';
+import { SEND_EMAIL } from '../graphql/mutations/mutations';
 
 interface FormState {
   name: string;
@@ -6,6 +8,7 @@ interface FormState {
   subject: string;
   message: string;
 }
+
 
 const Contact: React.FC = () => {
   const [formState, setFormState] = useState<FormState>({
@@ -15,6 +18,8 @@ const Contact: React.FC = () => {
     message: ''
   });
 
+  const [sendEmailMutation] = useMutation(SEND_EMAIL);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState({
@@ -23,18 +28,33 @@ const Contact: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(formState);
+    try {
+      await sendEmailMutation({
+        variables: {
+          sendEmailInput: {
+            name: formState.name,
+            email: formState.email,
+            subject: formState.subject,
+            message: formState.message
+          }
+        }
+      });
 
-    // Clear the form fields after submission
-    setFormState({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+      // Clear the form fields after successful submission
+      setFormState({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+
+      console.log('Email sent successfully!');
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
   };
 
   return (

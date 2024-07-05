@@ -135,17 +135,8 @@ export const INCREASE_RATING = gql(`
 `);
 
 
-export const CONTACT = gql(`
-  mutation {
-    sendEmail(
-      sendEmailInput: {
-        from: { name: "noman", address: "noman@gmail.com" },
-        recipients: [{ name: "Annur", address: "annur4395@example.com" }],
-        subject: "Test Email",
-        html: "<h1>Hello, world!</h1>",
-        text: "text!"
-      }
-    ) {
-      success
-    }
-}`)
+export const SEND_EMAIL = gql(`
+  mutation SendEmail($sendEmailInput: SendEmailDto!) {
+    sendEmail(sendEmailInput: $sendEmailInput)
+  }
+`)
