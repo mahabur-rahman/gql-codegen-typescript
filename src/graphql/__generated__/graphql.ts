@@ -16,6 +16,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type AttachmentDto = {
+  contentDisposition: Scalars['String']['input'];
+  filename: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   _id: Scalars['ID']['output'];
@@ -209,6 +215,7 @@ export type Reply = {
 };
 
 export type SendEmailDto = {
+  attachments?: InputMaybe<Array<AttachmentDto>>;
   email: Scalars['String']['input'];
   message: Scalars['String']['input'];
   name: Scalars['String']['input'];
