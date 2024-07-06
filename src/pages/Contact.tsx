@@ -7,15 +7,20 @@ interface FormState {
   email: string;
   subject: string;
   message: string;
+  attachments?: Array<{
+    path: string;
+    filename: string;
+    contentDisposition: 'attachment' | 'inline';
+  }>;
 }
-
 
 const Contact: React.FC = () => {
   const [formState, setFormState] = useState<FormState>({
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    attachments: [] // Initialize with an empty array for attachments
   });
 
   const [sendEmailMutation] = useMutation(SEND_EMAIL);
@@ -28,6 +33,31 @@ const Contact: React.FC = () => {
     });
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string;
+      setFormState({
+        ...formState,
+        attachments: [
+          ...formState.attachments!,
+          {
+            path: base64String,
+            filename: file.name,
+            contentDisposition: 'attachment'
+          }
+        ]
+      });
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -38,7 +68,8 @@ const Contact: React.FC = () => {
             name: formState.name,
             email: formState.email,
             subject: formState.subject,
-            message: formState.message
+            message: formState.message,
+            attachments: formState.attachments
           }
         }
       });
@@ -48,7 +79,8 @@ const Contact: React.FC = () => {
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
+        attachments: [] // Clear attachments array
       });
 
       alert('Email sent successfully!');
@@ -59,7 +91,7 @@ const Contact: React.FC = () => {
 
   return (
     <>
-      <h2 className="text-5xl text-center text-blue-400">Join with us</h2>
+      <h2 className="text-5xl text-center text-blue-400">Contact Us</h2>
 
       <div className="container p-4 mx-auto">
         <form onSubmit={handleSubmit}>
@@ -124,6 +156,19 @@ const Contact: React.FC = () => {
           </div>
 
           <div className="mb-4">
+            <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="attachments">
+              Attachments
+            </label>
+            <input
+              type="file"
+              name="attachments"
+              id="attachments"
+              onChange={handleFileChange}
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+          <div className="mb-4">
             <button
               type="submit"
               className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
@@ -135,6 +180,6 @@ const Contact: React.FC = () => {
       </div>
     </>
   );
-}
+};
 
 export default Contact;
