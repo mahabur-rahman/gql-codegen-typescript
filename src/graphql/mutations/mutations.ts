@@ -147,3 +147,13 @@ export const FORGOT_PASSWORD = gql(`
     forgotPassword(email:$email)
  }
 `)
+
+// reset password 
+export const RESET_PASSWORD = gql(`
+  mutation( $token: String! $userId: String! $newPassword: String!){
+    resetPassword(token:$token, userId:$userId, newPassword:$newPassword){
+        firstName
+        lastName
+      }
+}
+  `)
