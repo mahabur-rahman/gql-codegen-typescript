@@ -47,7 +47,7 @@ const GoogleSignIn = () => {
   useEffect(() => {
     if (data && data.googleLogin) {
       dispatch(login(data.googleLogin));
-      window.location.reload();
+      // window.location.reload();
       navigate("/");
     } else if (error) {
       console.error("Error logging in:", error);

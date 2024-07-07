@@ -1,3 +1,4 @@
+import ForgotPassword from "./components/ForgotPassword";
 import Contact from "./pages/Contact";
 import CreateFeed from "./pages/CreateFeed";
 import { Home } from "./pages/Home";
@@ -14,4 +15,5 @@ export const routes = [
   { path: "/profile", element: <Profile /> },
     { path: "/create-feed", element: <CreateFeed /> },
     { path: "/contact", element: <Contact /> },
+    { path: "/forget-password", element: <ForgotPassword/> },
 ];

@@ -2,7 +2,7 @@ import React from "react";
 import { useLazyQuery, gql } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../store";
 import { login as loginAction } from "../store/authSlice";
 import GoogleSignIn from "../components/GoogleLogin";
@@ -56,9 +56,8 @@ const Login = () => {
 
   useEffect(() => {
     if (data && data.login) {
-    
       dispatch(loginAction(data.login));
-      window.location.reload()
+      window.location.reload();
 
       navigate("/");
     } else if (error) {
@@ -89,7 +88,9 @@ const Login = () => {
           onChange={handleInputChange}
         />
 
-        <button type="submit" className="p-3 bg-red-300">Login</button>
+        <button type="submit" className="p-3 bg-red-300">
+          Login
+        </button>
         <br />
         <br />
         <br />
@@ -97,6 +98,13 @@ const Login = () => {
         <br />
       </form>
 
+      <Link to="/forget-password" className="text-2xl font-bold text-red-500 ">
+        Forgot Password ??
+      </Link>
+      <br />
+      <br />
+      <br />
+      <br />
       {/* login with google */}
       <GoogleSignIn />
 

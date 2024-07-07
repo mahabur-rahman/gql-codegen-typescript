@@ -140,3 +140,10 @@ export const SEND_EMAIL = gql(`
     sendEmail(sendEmailInput: $sendEmailInput)
   }
 `)
+
+// forgot password 
+export const FORGOT_PASSWORD = gql(` 
+  mutation($email:String!){
+    forgotPassword(email:$email)
+ }
+`)
