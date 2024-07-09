@@ -15,11 +15,15 @@ const Websocket = () => {
     socket.on("connect", () => {
       console.log("Connected!");
     });
+
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("onMessage event received!");
       console.log(newMessage);
       setMessages((prev) => [...prev, newMessage]);
     });
+
+
+    // clean up 
     return () => {
       console.log("Unregistering Events...");
       socket.off("connect");
