@@ -16,7 +16,7 @@ function App() {
         <Message />
       </WebsocketProvider> */}
 
-      <Chat />
+      {/* <Chat /> */}
     </>
   );
 }
