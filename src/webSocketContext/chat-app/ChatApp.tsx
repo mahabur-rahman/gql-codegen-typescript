@@ -20,11 +20,10 @@ const ChatApp = () => {
   const { loading, error, data } = useQuery(GET_ALL_USERS);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [currentUserId, setCurrentUserId] = useState("668e54b9bb5d8192b61fe7a8"); // Your current user's ID
 
   useEffect(() => {
-    // Fetch all messages when the component mounts
-    socket.emit("getAllMessages", {}); // Send an empty object or any required data
-
     socket.on("chatMessage", (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
@@ -39,56 +38,73 @@ const ChatApp = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedUser) {
+      socket.emit("getMessages", {
+        senderId: currentUserId,
+        recipientId: selectedUser._id,
+      });
+    }
+  }, [selectedUser]);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   const sendMessage = (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!selectedUser) {
+      alert("Select a user to chat with");
+      return;
+    }
+
     const newMessage = {
-      senderId: "668e54b9bb5d8192b61fe7a8",
-      recipientId: "6690fc2ae098678512ac4ed7",
+      senderId: currentUserId,
+      recipientId: selectedUser._id,
       content: message,
     };
     socket.emit("chatMessage", newMessage);
     setMessage("");
-  }; 
+  };
 
-  return ( 
+  return (
     <div className="chat-app">
-      {/* Left sidebar for user list */}
       <div className="sidebar">
         <h2 className="py-4 text-3xl font-bold border border-b-orange-400">
           Users
         </h2>
         <ul className="user-list">
           {data?.getAllUsers.map((user: User) => (
-            <li key={user._id} className="user">
+            <li
+              key={user._id}
+              className="user"
+              onClick={() => setSelectedUser(user)}
+              style={{
+                cursor: "pointer",
+                fontWeight: selectedUser?._id === user._id ? "bold" : "normal",
+              }}
+            >
               {user.firstName}
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Main chat area */}
       <div className="chat-area">
         <div className="chat-header">
-          <h2>Chat</h2>
+          <h2>Chat with {selectedUser?.firstName}</h2>
         </div>
         {messages.map((msg, index) => (
           <div key={index}>{msg.content}</div>
         ))}
 
-        {/* Chat input */}
-        <form className="message-input">
+        <form className="message-input" onSubmit={sendMessage}>
           <input
             type="text"
             placeholder="Type your message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          <button type="submit" onClick={sendMessage}>
-            Send
-          </button>
+          <button type="submit">Send</button>
         </form>
       </div>
     </div>
