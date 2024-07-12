@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:5000'); // Replace with your backend URL
@@ -8,12 +8,20 @@ const Chat = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    // Fetch all messages when the component mounts
+    socket.emit('getAllMessages', {}); // Send an empty object or any required data
+
     socket.on('chatMessage', (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
+    socket.on('allMessages', (allMessages) => {
+      setMessages(allMessages);
+    });
+
     return () => {
       socket.off('chatMessage');
+      socket.off('allMessages');
     };
   }, []);
 
@@ -29,7 +37,7 @@ const Chat = () => {
       <div>
         {messages.map((msg, index) => (
           <div key={index}>
-             {msg.content}
+            {msg.content}
           </div>
         ))}
       </div>
