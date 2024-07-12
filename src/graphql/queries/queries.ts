@@ -1,6 +1,5 @@
 import { gql } from "../__generated__";
 
-
 export const GET_ALL_QUOTES = gql(`
    query getAllQuotes($title:String) {
     getAllQuotes(title: $title) {
@@ -35,7 +34,6 @@ export const GET_ALL_QUOTES = gql(`
 }
 `);
 
-
 export const GET_COMMENT_QUOTE_REF = gql(`
 query getCommentsByQuote($quoteId:String!){
   getCommentsByQuote(quoteId:$quoteId){
@@ -56,6 +54,15 @@ query getCommentsByQuote($quoteId:String!){
   }
 }
   
-`)
+`);
 
-
+// export const GET_ALL_USERS = gql(` 
+//   query {
+//   getAllUsers{
+//     _id
+//     firstName
+//     email
+//   }
+// }
+  
+//   `);
