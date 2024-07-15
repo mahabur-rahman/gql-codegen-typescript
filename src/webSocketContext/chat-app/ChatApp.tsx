@@ -55,6 +55,7 @@ const ChatApp = () => {
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
     if (!selectedUser) {
       alert("Select a user to chat with");
       return;
