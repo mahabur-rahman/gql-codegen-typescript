@@ -3,6 +3,8 @@ import { gql } from "graphql-tag";
 import { User } from "../../graphql/__generated__/graphql";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
+import { RootState } from "../../store/index";
+import { useSelector } from "react-redux";
 
 export const GET_ALL_USERS: DocumentNode = gql`
   query {
@@ -17,11 +19,14 @@ export const GET_ALL_USERS: DocumentNode = gql`
 const socket = io("http://localhost:5000");
 
 const ChatApp = () => {
+  const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
   const { loading, error, data } = useQuery(GET_ALL_USERS);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [currentUserId, setCurrentUserId] = useState("668e54b9bb5d8192b61fe7a8"); // Your current user's ID
+  // const [currentUserId, setCurrentUserId] = useState(
+  //   "668e54b9bb5d8192b61fe7a8"
+  // ); // Your current user's ID
 
   useEffect(() => {
     socket.on("chatMessage", (newMessage) => {
