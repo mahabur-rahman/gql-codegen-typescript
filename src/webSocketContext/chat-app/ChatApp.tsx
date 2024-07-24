@@ -12,6 +12,7 @@ export const GET_ALL_USERS: DocumentNode = gql`
       _id
       firstName
       email
+      image
     }
   }
 `;
@@ -20,20 +21,38 @@ const socket: Socket = io("http://localhost:5000");
 
 const ChatApp = () => {
   const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
-  
+
   const { loading, error, data } = useQuery<Query>(GET_ALL_USERS);
-  const [messages, setMessages] = useState<Array<{ senderId: string; recipientId: string; content: string }>>([]);
+  const [messages, setMessages] = useState<
+    Array<{ senderId: string; recipientId: string; content: string }>
+  >([]);
   const [message, setMessage] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
-    socket.on("chatMessage", (newMessage: { senderId: string; recipientId: string; content: string }) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
+    socket.on(
+      "chatMessage",
+      (newMessage: {
+        senderId: string;
+        recipientId: string;
+        content: string;
+      }) => {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    );
 
-    socket.on("allMessages", (allMessages: Array<{ senderId: string; recipientId: string; content: string }>) => {
-      setMessages(allMessages);
-    });
+    socket.on(
+      "allMessages",
+      (
+        allMessages: Array<{
+          senderId: string;
+          recipientId: string;
+          content: string;
+        }>
+      ) => {
+        setMessages(allMessages);
+      }
+    );
 
     return () => {
       socket.off("chatMessage");
@@ -55,7 +74,7 @@ const ChatApp = () => {
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!selectedUser) {
       alert("Select a user to chat with");
       return;
@@ -70,6 +89,8 @@ const ChatApp = () => {
     setMessage("");
   };
 
+  console.log(`message: `, messages);
+
   return (
     <div className="chat-app">
       <div className="sidebar">
@@ -80,13 +101,22 @@ const ChatApp = () => {
           {data?.getAllUsers.map((user: User) => (
             <li
               key={user._id}
-              className="user"
+              className="flex items-center justify-between user"
               onClick={() => setSelectedUser(user)}
               style={{
                 cursor: "pointer",
                 fontWeight: selectedUser?._id === user._id ? "bold" : "normal",
               }}
             >
+              <img
+                src={
+                  user.image !== null && user.image !== undefined
+                    ? user.image
+                    : ""
+                }
+                alt="user"
+                className="w-12 h-12 rounded-full"
+              />
               {user.firstName}
             </li>
           ))}
@@ -97,9 +127,20 @@ const ChatApp = () => {
         <div className="chat-header">
           <h2>Chat with {selectedUser?.firstName}</h2>
         </div>
-        {messages.map((msg, index) => (
-          <div key={index}>{msg.content}</div>
-        ))}
+        <div>
+          {messages.map((msg, index) => (
+            <div key={index}>
+              <div>
+                <img
+                  src={msg?.recipientId?.image}
+                  alt=""
+                  className="w-10 h-10 rounded-full"
+                />
+                {msg.content}
+              </div>
+            </div>
+          ))}
+        </div>
 
         <form className="message-input" onSubmit={sendMessage}>
           <input
