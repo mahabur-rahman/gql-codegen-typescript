@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 import { useEffect, useState, FormEvent } from "react";
 import { RootState } from "../../store/index";
 import { useSelector } from "react-redux";
+import { FaRegTrashCan } from "react-icons/fa6";
 
 export const GET_ALL_USERS: DocumentNode = gql`
   query {
@@ -21,10 +22,14 @@ const socket: Socket = io("http://localhost:5000");
 
 const ChatApp = () => {
   const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
-
   const { loading, error, data } = useQuery<Query>(GET_ALL_USERS);
   const [messages, setMessages] = useState<
-    Array<{ senderId: string; recipientId: string; content: string }>
+    Array<{
+      _id: string;
+      senderId: string;
+      recipientId: string;
+      content: string;
+    }>
   >([]);
   const [message, setMessage] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -33,6 +38,7 @@ const ChatApp = () => {
     socket.on(
       "chatMessage",
       (newMessage: {
+        _id: string;
         senderId: string;
         recipientId: string;
         content: string;
@@ -45,6 +51,7 @@ const ChatApp = () => {
       "allMessages",
       (
         allMessages: Array<{
+          _id: string;
           senderId: string;
           recipientId: string;
           content: string;
@@ -54,9 +61,16 @@ const ChatApp = () => {
       }
     );
 
+    socket.on("messageDeleted", (messageId: string) => {
+      setMessages((prevMessages) =>
+        prevMessages.filter((message) => message._id !== messageId)
+      );
+    });
+
     return () => {
       socket.off("chatMessage");
       socket.off("allMessages");
+      socket.off("messageDeleted");
     };
   }, []);
 
@@ -89,12 +103,14 @@ const ChatApp = () => {
     setMessage("");
   };
 
-  console.log(`message: `, messages);
+  const handleDeleteMessage = (messageId: string) => {
+    socket.emit("deleteMessage", messageId);
+  };
 
   return (
     <div className="chat-app">
       <div className="sidebar">
-        <h2 className="py-4 text-3xl font-bold border border-b-orange-400">
+        <h2 className="py-4 text-3xl font-bold border-b border-orange-400">
           Users
         </h2>
         <ul className="user-list">
@@ -127,16 +143,22 @@ const ChatApp = () => {
         <div className="chat-header">
           <h2>Chat with {selectedUser?.firstName}</h2>
         </div>
-        <div>
-          {messages.map((msg, index) => (
-            <div key={index}>
+        <div className="messages">
+          {messages.map((msg) => (
+            <div key={msg._id} className="flex justify-between m-3">
               <div>
                 <img
-                  src={msg?.recipientId?.image}
+                  src={selectedUser?.image}
                   alt=""
                   className="w-10 h-10 rounded-full"
                 />
                 {msg.content}
+              </div>
+              <div>
+                <FaRegTrashCan
+                  className="mx-2 text-red-500 cursor-pointer"
+                  onClick={() => handleDeleteMessage(msg._id)}
+                />
               </div>
             </div>
           ))}
