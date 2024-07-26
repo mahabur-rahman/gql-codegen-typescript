@@ -147,11 +147,11 @@ const ChatApp = () => {
           {messages.map((msg) => (
             <div key={msg._id} className="flex justify-between m-3">
               <div>
-                <img
+                {/* <img
                   src={selectedUser?.image}
                   alt=""
                   className="w-10 h-10 rounded-full"
-                />
+                /> */}
                 {msg.content}
               </div>
               <div>
