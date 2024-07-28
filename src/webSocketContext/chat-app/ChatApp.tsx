@@ -144,24 +144,30 @@ const ChatApp = () => {
           <h2>Chat with {selectedUser?.firstName}</h2>
         </div>
         <div className="messages">
-          {messages.map((msg) => (
-            <div key={msg._id} className="flex justify-between m-3">
-              <div>
-                {/* <img
+          {messages.map((msg) => {
+            // console.log('user id : ', currentUserId)
+            // console.log("sender id : ", msg.senderId._id);
+            return (
+              <div key={msg._id} className="flex justify-between m-3">
+                <div>
+                  {/* <img
                   src={selectedUser?.image}
                   alt=""
                   className="w-10 h-10 rounded-full"
                 /> */}
-                {msg.content}
+                  {msg.content}
+                </div>
+                {currentUserId === msg.senderId._id && (
+                  <div>
+                    <FaRegTrashCan
+                      className="mx-2 text-red-500 cursor-pointer"
+                      onClick={() => handleDeleteMessage(msg._id)}
+                    />
+                  </div>
+                )}
               </div>
-              <div>
-                <FaRegTrashCan
-                  className="mx-2 text-red-500 cursor-pointer"
-                  onClick={() => handleDeleteMessage(msg._id)}
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <form className="message-input" onSubmit={sendMessage}>
