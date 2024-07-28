@@ -32,6 +32,10 @@ const ChatApp = () => {
     }>
   >([]);
   const [message, setMessage] = useState<string>("");
+  const [editedMessage, setEditedMessage] = useState<{
+    _id: string;
+    content: string;
+  } | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -67,10 +71,24 @@ const ChatApp = () => {
       );
     });
 
+    socket.on(
+      "messageEdited",
+      (updatedMessage: { _id: string; content: string }) => {
+        setMessages((prevMessages) =>
+          prevMessages.map((message) =>
+            message._id === updatedMessage._id
+              ? { ...message, content: updatedMessage.content }
+              : message
+          )
+        );
+      }
+    );
+
     return () => {
       socket.off("chatMessage");
       socket.off("allMessages");
       socket.off("messageDeleted");
+      socket.off("messageEdited");
     };
   }, []);
 
@@ -105,6 +123,21 @@ const ChatApp = () => {
 
   const handleDeleteMessage = (messageId: string) => {
     socket.emit("deleteMessage", messageId);
+  };
+
+  const handleEditMessage = (messageId: string, content: string) => {
+    setEditedMessage({ _id: messageId, content });
+  };
+
+  const submitEditMessage = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (editedMessage) {
+      socket.emit("editMessage", {
+        messageId: editedMessage._id,
+        newContent: editedMessage.content,
+      });
+      setEditedMessage(null);
+    }
   };
 
   return (
@@ -145,17 +178,26 @@ const ChatApp = () => {
         </div>
         <div className="messages">
           {messages.map((msg) => {
-            // console.log('user id : ', currentUserId)
-            // console.log("sender id : ", msg.senderId._id);
             return (
               <div key={msg._id} className="flex justify-between m-3">
                 <div>
-                  {/* <img
-                  src={selectedUser?.image}
-                  alt=""
-                  className="w-10 h-10 rounded-full"
-                /> */}
-                  {msg.content}
+                  {editedMessage?._id === msg._id ? (
+                    <form onSubmit={submitEditMessage}>
+                      <input
+                        type="text"
+                        value={editedMessage.content}
+                        onChange={(e) =>
+                          setEditedMessage({
+                            ...editedMessage,
+                            content: e.target.value,
+                          })
+                        }
+                      />
+                      <button type="submit">Save</button>
+                    </form>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
                 {currentUserId === msg.senderId && (
                   <div>
@@ -163,6 +205,9 @@ const ChatApp = () => {
                       className="mx-2 text-red-500 cursor-pointer"
                       onClick={() => handleDeleteMessage(msg._id)}
                     />
+                    <button onClick={() => handleEditMessage(msg._id, msg.content)}>
+                      Edit
+                    </button>
                   </div>
                 )}
               </div>
