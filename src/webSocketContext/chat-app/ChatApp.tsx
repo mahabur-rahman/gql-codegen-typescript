@@ -157,7 +157,7 @@ const ChatApp = () => {
                 /> */}
                   {msg.content}
                 </div>
-                {currentUserId === msg.senderId._id && (
+                {currentUserId === msg.senderId && (
                   <div>
                     <FaRegTrashCan
                       className="mx-2 text-red-500 cursor-pointer"
