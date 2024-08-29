@@ -1,4 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
+import { useMutation } from "@apollo/client";
+import { PAYMENT } from "../graphql/mutations/mutations";
 
 const Payment = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +10,11 @@ const Payment = () => {
     address: "",
     phone: "",
     productId: "",
+    amount: ''
   });
+
+  // Initialize the mutation
+  const [placeOrder, { loading, error, data }] = useMutation(PAYMENT);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -19,10 +25,33 @@ const Payment = () => {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: API CALL
-    console.log("Payment Data:", formData);
+
+    try {
+      const { name, currency, postCode, address, phone, productId, amount} = formData;
+
+      // Call the mutation with the input data
+      const response = await placeOrder({
+        variables: {
+          paymentInput: {
+            name,
+            currency,
+            postCode,
+            address,
+            phone,
+            productId,
+            amount
+          },
+        },
+      });
+
+      // Handle the response (e.g., show a success message, redirect, etc.)
+      console.log("Order placed successfully:", response?.data?.placeOrder);
+    } catch (err) {
+      // Handle errors (e.g., show an error message)
+      console.error("Error placing order:", err);
+    }
   };
 
   return (
@@ -112,12 +141,30 @@ const Payment = () => {
               required
             />
           </div>
+          <div className="mb-6">
+            <label className="block mb-2 font-medium text-gray-700">
+       Amount : 
+            </label>
+            <input
+              type="text"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              className="w-full px-4 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
           <button
             type="submit"
             className="w-full py-2 font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            disabled={loading}
           >
-            Place Order
+            {loading ? "Placing Order..." : "Pay Now"}
           </button>
+          {error && <p className="mt-4 text-red-500">Error: {error.message}</p>}
+          {data && (
+            <p className="mt-4 text-green-500">Order placed successfully!</p>
+          )}
         </form>
       </div>
     </div>
