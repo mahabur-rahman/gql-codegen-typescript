@@ -159,14 +159,21 @@ export const RESET_PASSWORD = gql(`
 
 // payment
 export const PAYMENT = gql(`
-    mutation PlaceOrder($paymentInput: PaymentDto!) {
-      placeOrder(paymentInput: $paymentInput) {
-        name
-        amount
-        postCode
-        address
-        phone
-        productId
-   }
+    mutation placeOrder($input: PaymentDto!) {
+      placeOrder(paymentInput: $input) {
+        GatewayPageURL
+          paymentOutput {
+            name
+            amount
+            currency
+            postCode
+            address
+            phone
+            productId
+          }
+      }
 }
+
+
+
   `);

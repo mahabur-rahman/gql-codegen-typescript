@@ -34,7 +34,7 @@ const Payment = () => {
       // Call the mutation with the input data
       const response = await placeOrder({
         variables: {
-          paymentInput: {
+          input: {
             name,
             currency,
             postCode,
