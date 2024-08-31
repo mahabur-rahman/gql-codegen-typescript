@@ -1,4 +1,5 @@
 import ForgotPassword from "./components/ForgotPassword";
+import PaymentFailed from "./components/PaymentFailed";
 import PaymentSuccess from "./components/PaymentSuccess";
 import ResetPassword from "./components/ResetPassword";
 import Contact from "./pages/Contact";
@@ -17,7 +18,8 @@ export const routes = [
   { path: "/quotes", element: <QuotePage /> },
   { path: "/profile", element: <Profile /> },
   { path: "/payment", element: <Payment /> },
-  { path: "/success/:transactionId", element: <PaymentSuccess /> },
+  { path: "/payment/success/:transactionId", element: <PaymentSuccess /> },
+  { path: "/payment/failed/:transactionId", element: <PaymentFailed /> },
   { path: "/create-feed", element: <CreateFeed /> },
   { path: "/contact", element: <Contact /> },
   { path: "/forget-password", element: <ForgotPassword /> },
