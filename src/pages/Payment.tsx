@@ -10,7 +10,7 @@ const Payment = () => {
     address: "",
     phone: "",
     productId: "",
-    amount: ''
+    amount: "",
   });
 
   // Initialize the mutation
@@ -29,7 +29,8 @@ const Payment = () => {
     e.preventDefault();
 
     try {
-      const { name, currency, postCode, address, phone, productId, amount} = formData;
+      const { name, currency, postCode, address, phone, productId, amount } =
+        formData;
 
       // Call the mutation with the input data
       const response = await placeOrder({
@@ -41,13 +42,20 @@ const Payment = () => {
             address,
             phone,
             productId,
-            amount
+            amount,
           },
         },
       });
 
       // Handle the response (e.g., show a success message, redirect, etc.)
       console.log("Order placed successfully:", response?.data?.placeOrder);
+      const gatePageUrl = response?.data?.placeOrder?.GatewayPageURL;
+
+      if (gatePageUrl) {
+        window.location.replace(gatePageUrl);
+      } else {
+        console.error("Gateway page URL not found.");
+      }
     } catch (err) {
       // Handle errors (e.g., show an error message)
       console.error("Error placing order:", err);
@@ -143,7 +151,7 @@ const Payment = () => {
           </div>
           <div className="mb-6">
             <label className="block mb-2 font-medium text-gray-700">
-       Amount : 
+              Amount :
             </label>
             <input
               type="text"
