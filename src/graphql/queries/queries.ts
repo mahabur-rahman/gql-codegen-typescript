@@ -1,5 +1,20 @@
 import { gql } from "../__generated__";
 
+export const GET_ALL_NOTIFICATIONS = gql(`
+  query getAllNotifications {
+    getAllNotifications {
+      _id
+      title
+      user {
+        _id
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+`);
+
 export const GET_ALL_QUOTES = gql(`
    query getAllQuotes($title:String) {
     getAllQuotes(title: $title) {
@@ -56,7 +71,7 @@ query getCommentsByQuote($quoteId:String!){
   
 `);
 
-// export const GET_ALL_USERS = gql(` 
+// export const GET_ALL_USERS = gql(`
 //   query {
 //   getAllUsers{
 //     _id
@@ -64,18 +79,5 @@ query getCommentsByQuote($quoteId:String!){
 //     email
 //   }
 // }
-  
+
 //   `);
-
-
-export const GET_ALL_NOTIFICATIONS = gql(` 
-query {
-  getAllNotifications {
-    _id
-    title
-  
-  }
-}
-
-  
-  `);

@@ -1,39 +1,31 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { logout } from "../store/authSlice";
 import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
-import { Avatar, Badge } from "antd";
-import { gql, useQuery } from "@apollo/client";
-
-export const GET_ALL_NOTIFICATIONS = gql(` 
-  query {
-    getAllNotifications {
-      _id
-      title
-    
-    }
-  }
-  
-    
-    `);
+import { useQuery } from "@apollo/client";
+import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
+import { Badge, Avatar, Dropdown } from "antd";
+import NotificationDropdown from "./Notifications";
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { data, loading, error } = useQuery(GET_ALL_NOTIFICATIONS);
+  const { data } = useQuery(GET_ALL_NOTIFICATIONS);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
-const count = data?.getAllNotifications?.length;
+  console.log(`Notifications : `, data);
+  const notifications = data?.getAllNotifications || [];
 
   // logout
   const handleLogout = () => {
     googleLogout();
     dispatch(logout());
-
     navigate("/signin");
   };
 
@@ -127,8 +119,17 @@ const count = data?.getAllNotifications?.length;
             </li>
 
             <li>
-              <Badge count={count}>
-                <Avatar shape="square" size="large" />
+              <Badge count={notifications.length}>
+                <Dropdown
+                  overlay={
+                    <NotificationDropdown notifications={notifications} />
+                  }
+                  visible={dropdownVisible}
+                  onVisibleChange={setDropdownVisible}
+                  trigger={["hover"]}
+                >
+                  <Avatar shape="square" size="large" />
+                </Dropdown>
               </Badge>
             </li>
           </ul>
