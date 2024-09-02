@@ -1,9 +1,6 @@
+import React from "react";
+import { Avatar } from "antd";
 
-
-import React from 'react';
-import { Avatar } from 'antd'; 
-
-// Define the type for a User
 interface User {
   _id: string;
   firstName: string;
@@ -11,19 +8,19 @@ interface User {
   email: string;
 }
 
-
 interface Notification {
   _id: string;
   title: string;
   user?: User | null;
 }
 
-
 interface NotificationDropdownProps {
   notifications: Notification[];
 }
 
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ notifications }) => {
+const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
+  notifications,
+}) => {
   return (
     <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-72">
       <ul className="p-2">
