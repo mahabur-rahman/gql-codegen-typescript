@@ -66,3 +66,16 @@ query getCommentsByQuote($quoteId:String!){
 // }
   
 //   `);
+
+
+export const GET_ALL_NOTIFICATIONS = gql(` 
+query {
+  getAllNotifications {
+    _id
+    title
+  
+  }
+}
+
+  
+  `);

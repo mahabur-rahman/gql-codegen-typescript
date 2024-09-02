@@ -5,13 +5,29 @@ import { logout } from "../store/authSlice";
 import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
-import { Avatar, Badge } from 'antd';
+import { Avatar, Badge } from "antd";
+import { gql, useQuery } from "@apollo/client";
+
+export const GET_ALL_NOTIFICATIONS = gql(` 
+  query {
+    getAllNotifications {
+      _id
+      title
+    
+    }
+  }
+  
+    
+    `);
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { data, loading, error } = useQuery(GET_ALL_NOTIFICATIONS);
+
+const count = data?.getAllNotifications?.length;
 
   // logout
   const handleLogout = () => {
@@ -111,7 +127,7 @@ export const Navbar = () => {
             </li>
 
             <li>
-              <Badge count={5}>
+              <Badge count={count}>
                 <Avatar shape="square" size="large" />
               </Badge>
             </li>
