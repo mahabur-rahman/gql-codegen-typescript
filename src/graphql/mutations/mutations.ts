@@ -134,21 +134,20 @@ export const INCREASE_RATING = gql(`
   }
 `);
 
-
 export const SEND_EMAIL = gql(`
   mutation SendEmail($sendEmailInput: SendEmailDto!) {
     sendEmail(sendEmailInput: $sendEmailInput)
   }
-`)
+`);
 
-// forgot password 
+// forgot password
 export const FORGOT_PASSWORD = gql(` 
   mutation($email:String!){
     forgotPassword(email:$email)
  }
-`)
+`);
 
-// reset password 
+// reset password
 export const RESET_PASSWORD = gql(`
   mutation( $token: String! $userId: String! $newPassword: String!){
     resetPassword(token:$token, userId:$userId, newPassword:$newPassword){
@@ -156,4 +155,25 @@ export const RESET_PASSWORD = gql(`
         lastName
       }
 }
-  `)
+  `);
+
+// payment
+export const PAYMENT = gql(`
+    mutation placeOrder($input: PaymentDto!) {
+      placeOrder(paymentInput: $input) {
+        GatewayPageURL
+          paymentOutput {
+            name
+            amount
+            currency
+            postCode
+            address
+            phone
+            productId
+          }
+      }
+}
+
+
+
+  `);

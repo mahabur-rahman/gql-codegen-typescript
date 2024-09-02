@@ -5,12 +5,29 @@ import { logout } from "../store/authSlice";
 import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
+import { Avatar, Badge } from "antd";
+import { gql, useQuery } from "@apollo/client";
+
+export const GET_ALL_NOTIFICATIONS = gql(` 
+  query {
+    getAllNotifications {
+      _id
+      title
+    
+    }
+  }
+  
+    
+    `);
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { data, loading, error } = useQuery(GET_ALL_NOTIFICATIONS);
+
+const count = data?.getAllNotifications?.length;
 
   // logout
   const handleLogout = () => {
@@ -88,15 +105,32 @@ export const Navbar = () => {
             </li>
 
             <li>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center justify-center h-12 px-6 font-medium tracking-wide text-black transition duration-200 rounded bg-deep-purple-accent-400 focus:shadow-outline focus:outline-none"
-                  aria-label="Sign up"
-                  title="Sign up"
-                >
-                  Contact
-                </Link>
-              </li>
+              <Link
+                to="/payment"
+                aria-label="Our product"
+                title="Our product"
+                className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
+              >
+                Payment
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center h-12 px-6 font-medium tracking-wide text-black transition duration-200 rounded bg-deep-purple-accent-400 focus:shadow-outline focus:outline-none"
+                aria-label="Sign up"
+                title="Sign up"
+              >
+                Contact
+              </Link>
+            </li>
+
+            <li>
+              <Badge count={count}>
+                <Avatar shape="square" size="large" />
+              </Badge>
+            </li>
           </ul>
         </div>
         <ul className="flex items-center hidden space-x-8 lg:flex">
