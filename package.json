@@ -17,6 +17,7 @@
     "@types/node": "^20.14.8",
     "antd": "^5.18.3",
     "antd-img-crop": "^4.22.0",
+    "apollo-link-ws": "^1.0.20",
     "axios": "^1.7.2",
     "concurrently": "^8.2.2",
     "graphql": "^16.9.0",
