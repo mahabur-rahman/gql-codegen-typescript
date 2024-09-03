@@ -12,7 +12,7 @@ import {
 import { BrowserRouter as Router } from "react-router-dom";
 import { store } from "./store/index.ts";
 import { Provider } from "react-redux";
-import { WebSocketLink } from "apollo-link-ws";
+import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 
 const wsLink = new WebSocketLink({
@@ -40,12 +40,11 @@ const link = split(
 );
 
 const client = new ApolloClient({
-  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT,
   cache: new InMemoryCache(),
+  link,
   headers: {
     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   },
-  link,
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
