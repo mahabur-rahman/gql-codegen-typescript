@@ -14,20 +14,39 @@ import { store } from "./store/index.ts";
 import { Provider } from "react-redux";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { setContext } from "@apollo/client/link/context";
 
-const wsLink = new WebSocketLink({
-  uri: `ws://localhost:5000/graphql`,
-  options: {
-    reconnect: true,
-  },
-});
-
+// HTTP link for queries and mutations
 const httpLink = new HttpLink({
   uri: "http://localhost:5000/graphql",
 });
 
+// WebSocket link for subscriptions
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:5000/graphql`,
+  options: {
+    reconnect: true,
+    connectionParams: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    },
+  },
+});
+
+// Set the `Authorization` header for the HTTP link
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("accessToken");
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+// Split link for directing operations between HTTP and WebSocket links
 const link = split(
-  // split based on operation type
   ({ query }) => {
     const definition = getMainDefinition(query);
     return (
@@ -36,15 +55,13 @@ const link = split(
     );
   },
   wsLink,
-  httpLink
+  authLink.concat(httpLink)
 );
 
+// Apollo Client setup
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
