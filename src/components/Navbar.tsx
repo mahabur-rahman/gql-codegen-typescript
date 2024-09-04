@@ -1,15 +1,30 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { logout } from "../store/authSlice";
 import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 import { Badge, Avatar, Dropdown } from "antd";
 import NotificationDropdown from "./Notifications";
+import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
+
+// Define the Notification and User types
+type User = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
+type Notification = {
+  _id: string;
+  title: string;
+  user?: User | null;
+};
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
@@ -18,9 +33,30 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { data } = useQuery(GET_ALL_NOTIFICATIONS);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  console.log(`Notifications : `, data);
-  const notifications = data?.getAllNotifications || [];
+  const { data: notificationData, error } = useSubscription(
+    NOTIFICATIONS_CREATED
+  );
+
+  useEffect(() => {
+    if (data && data.getAllNotifications) {
+      setNotifications(data.getAllNotifications as Notification[]);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (notificationData && notificationData.notificationCreated) {
+      setNotifications((prevNotifications) => [
+        notificationData.notificationCreated as Notification,
+        ...prevNotifications,
+      ]);
+    }
+  }, [notificationData]);
+
+  if (error) {
+    return <div>Error! {error.message}</div>;
+  }
 
   // logout
   const handleLogout = () => {
