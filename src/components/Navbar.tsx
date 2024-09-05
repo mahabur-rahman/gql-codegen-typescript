@@ -33,52 +33,56 @@ export const Navbar = () => {
   const { data } = useQuery(GET_ALL_NOTIFICATIONS);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [notificationCount, setNotificationCount] = useState<number | null>(
-    null
-  ); // Start with null
-  const [hasRealTimeNotifications, setHasRealTimeNotifications] =
-    useState(false); // Track if a real-time notification is received
+  const [notificationCount, setNotificationCount] = useState<number | null>(null); 
+  const [hasRealTimeNotifications, setHasRealTimeNotifications] = useState(false); 
 
-  const { data: notificationData, error } = useSubscription(
-    NOTIFICATIONS_CREATED
-  );
+  const { data: notificationData, error } = useSubscription(NOTIFICATIONS_CREATED);
 
-  // Initially load notifications
   useEffect(() => {
     if (data && data.getAllNotifications) {
       setNotifications(data.getAllNotifications as Notification[]);
     }
   }, [data]);
 
-  // Handle real-time notification updates
+  useEffect(() => {
+    const savedCount = localStorage.getItem("notificationCount");
+    if (savedCount) {
+      setNotificationCount(parseInt(savedCount));
+      setHasRealTimeNotifications(true); 
+    }
+  }, []);
+
   useEffect(() => {
     if (notificationData && notificationData.notificationCreated) {
       setNotifications((prevNotifications) => [
         notificationData.notificationCreated as Notification,
         ...prevNotifications,
       ]);
-      setHasRealTimeNotifications(true); // Real-time notification received
+      setHasRealTimeNotifications(true);
       setNotificationCount((prevCount) =>
         prevCount !== null ? prevCount + 1 : 1
-      ); // Increment count on new notification
+      ); 
     }
   }, [notificationData]);
+
+  useEffect(() => {
+    if (notificationCount !== null) {
+      localStorage.setItem("notificationCount", notificationCount.toString());
+    }
+  }, [notificationCount]);
 
   if (error) {
     return <div>Error! {error.message}</div>;
   }
 
-  // Logout function
   const handleLogout = () => {
     googleLogout();
     dispatch(logout());
     navigate("/signin");
   };
 
-  // Handle search input
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.trim();
-
     if (query !== "") {
       dispatch(setSearchQuery(query));
       navigate(`/quotes${query ? `?title=${encodeURIComponent(query)}` : ""}`);
@@ -86,6 +90,11 @@ export const Navbar = () => {
       dispatch(setSearchQuery(""));
       navigate(`/quotes`);
     }
+  };
+
+  const handleNotificationClick = () => {
+    setNotificationCount(0);
+    localStorage.setItem("notificationCount", "0");
   };
 
   return (
@@ -172,6 +181,7 @@ export const Navbar = () => {
                   visible={dropdownVisible}
                   onVisibleChange={setDropdownVisible}
                   trigger={["hover"]}
+                  onClick={handleNotificationClick} // Add onClick handler
                 >
                   <Avatar shape="square" size="large" />
                 </Dropdown>
@@ -236,6 +246,23 @@ export const Navbar = () => {
             </>
           )}
         </ul>
+        <div className="lg:hidden">
+          <button
+            aria-label="Open Menu"
+            title="Open Menu"
+            className="p-2 -mr-1 transition duration-200 rounded focus:outline-none focus:ring"
+          >
+            <svg className="w-5 text-gray-600" viewBox="0 0 24 24" fill="none">
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
