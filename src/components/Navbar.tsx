@@ -12,7 +12,6 @@ import { Badge, Avatar, Dropdown } from "antd";
 import NotificationDropdown from "./Notifications";
 import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
 
-// Define the Notification and User types
 type User = {
   _id: string;
   firstName: string;
@@ -34,23 +33,34 @@ export const Navbar = () => {
   const { data } = useQuery(GET_ALL_NOTIFICATIONS);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notificationCount, setNotificationCount] = useState<number | null>(
+    null
+  ); // Start with null
+  const [hasRealTimeNotifications, setHasRealTimeNotifications] =
+    useState(false); // Track if a real-time notification is received
 
   const { data: notificationData, error } = useSubscription(
     NOTIFICATIONS_CREATED
   );
 
+  // Initially load notifications
   useEffect(() => {
     if (data && data.getAllNotifications) {
       setNotifications(data.getAllNotifications as Notification[]);
     }
   }, [data]);
 
+  // Handle real-time notification updates
   useEffect(() => {
     if (notificationData && notificationData.notificationCreated) {
       setNotifications((prevNotifications) => [
         notificationData.notificationCreated as Notification,
         ...prevNotifications,
       ]);
+      setHasRealTimeNotifications(true); // Real-time notification received
+      setNotificationCount((prevCount) =>
+        prevCount !== null ? prevCount + 1 : 1
+      ); // Increment count on new notification
     }
   }, [notificationData]);
 
@@ -58,13 +68,14 @@ export const Navbar = () => {
     return <div>Error! {error.message}</div>;
   }
 
-  // logout
+  // Logout function
   const handleLogout = () => {
     googleLogout();
     dispatch(logout());
     navigate("/signin");
   };
 
+  // Handle search input
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.trim();
 
@@ -155,11 +166,9 @@ export const Navbar = () => {
             </li>
 
             <li>
-              <Badge count={notifications.length}>
+              <Badge count={hasRealTimeNotifications ? notificationCount : undefined}>
                 <Dropdown
-                  overlay={
-                    <NotificationDropdown notifications={notifications} />
-                  }
+                  overlay={<NotificationDropdown notifications={notifications} />}
                   visible={dropdownVisible}
                   onVisibleChange={setDropdownVisible}
                   trigger={["hover"]}
