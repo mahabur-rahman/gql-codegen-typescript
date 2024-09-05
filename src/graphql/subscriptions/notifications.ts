@@ -14,6 +14,3 @@ export const NOTIFICATIONS_CREATED = gql(`
       }
     }
   `);
-
-
-// yt video: https://youtu.be/Bf3k7zH0I6w
