@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { logout } from "../store/authSlice";
@@ -8,10 +8,10 @@ import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
 import { Badge, Avatar, Dropdown } from "antd";
 import NotificationDropdown from "./Notifications";
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
+import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
 
-// Update the Notification type to include __typename
 interface User {
   _id: string;
   firstName: string;
@@ -31,7 +31,29 @@ export const Navbar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const { data } = useQuery(GET_ALL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notificationsCount, setNotificationsCount] = useState(0);
+
+  // Fetch initial notifications count and list
+  const { data: queryData } = useQuery(GET_ALL_NOTIFICATIONS);
+
+  useEffect(() => {
+    if (queryData?.getAllNotifications) {
+      setNotifications(queryData.getAllNotifications.notifications || []);
+      setNotificationsCount(queryData.getAllNotifications.notificationsCount || 0);
+    }
+  }, [queryData]);
+
+  // Handle new notifications
+  const { data: subscriptionData } = useSubscription(NOTIFICATIONS_CREATED);
+
+  useEffect(() => {
+    if (subscriptionData?.notificationCreated) {
+      const newNotification = subscriptionData.notificationCreated;
+      setNotifications((prevNotifications) => [newNotification, ...prevNotifications]);
+      setNotificationsCount((prevCount) => prevCount + 1);
+    }
+  }, [subscriptionData]);
 
   const handleLogout = () => {
     googleLogout();
@@ -50,8 +72,6 @@ export const Navbar = () => {
     }
   };
 
-  console.log(data);
-
   return (
     <div className="px-4 py-5 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
       <div className="relative flex items-center justify-between">
@@ -62,35 +82,17 @@ export const Navbar = () => {
             title="Company"
             className="inline-flex items-center mr-8"
           >
-            <svg
-              className="w-8 text-deep-purple-accent-400"
-              viewBox="0 0 24 24"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeMiterlimit="10"
-              stroke="currentColor"
-              fill="none"
-            >
-              <rect x="3" y="1" width="7" height="12" />
-              <rect x="3" y="17" width="7" height="6" />
-              <rect x="14" y="1" width="7" height="6" />
-              <rect x="14" y="11" width="7" height="12" />
-            </svg>
-            <span className="ml-2 text-xl font-bold tracking-wide text-gray-800 uppercase">
-              Company
-            </span>
-
-            <div className="mx-12">
-              <Input placeholder="Enter keyword" onChange={handleSearch} />
-            </div>
+            {/* Company Logo */}
           </Link>
+          <div className="mx-12">
+            <Input placeholder="Enter keyword" onChange={handleSearch} />
+          </div>
           <ul className="flex items-center hidden space-x-8 lg:flex">
             <li>
               <Link
                 to="/quotes"
-                aria-label="Our product"
-                title="Our product"
+                aria-label="All Feeds"
+                title="All Feeds"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
                 All Feeds
@@ -99,55 +101,51 @@ export const Navbar = () => {
             <li>
               <Link
                 to="/create-feed"
-                aria-label="Our product"
-                title="Our product"
+                aria-label="Create Feed"
+                title="Create Feed"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
                 Create Feed
               </Link>
             </li>
-
             <li>
               <Link
                 to="/payment"
-                aria-label="Our product"
-                title="Our product"
+                aria-label="Payment"
+                title="Payment"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
                 Payment
               </Link>
             </li>
-
             <li>
               <Link
                 to="/contact"
                 className="inline-flex items-center justify-center h-12 px-6 font-medium tracking-wide text-black transition duration-200 rounded bg-deep-purple-accent-400 focus:shadow-outline focus:outline-none"
-                aria-label="Sign up"
-                title="Sign up"
+                aria-label="Contact"
+                title="Contact"
               >
                 Contact
               </Link>
             </li>
-
-            <li>
-              <Badge count={data?.getAllNotifications?.notificationsCount || 0}>
-                <Dropdown
-                  overlay={
-                    <NotificationDropdown
-                      notifications={
-                        (data?.getAllNotifications
-                          ?.notifications as Notification[]) || []
-                      }
-                    />
-                  }
-                  visible={dropdownVisible}
-                  onVisibleChange={setDropdownVisible}
-                  trigger={["hover"]}
-                >
-                  <Avatar shape="square" size="large" />
-                </Dropdown>
-              </Badge>
-            </li>
+            {notificationsCount > 0 && (
+              <li>
+                <Badge count={notificationsCount}>
+                  <Dropdown
+                    overlay={
+                      <NotificationDropdown
+                        notifications={notifications}
+                      />
+                    }
+                    visible={dropdownVisible}
+                    onVisibleChange={setDropdownVisible}
+                    trigger={["hover"]}
+                  >
+                    <Avatar shape="square" size="large" />
+                  </Dropdown>
+                </Badge>
+              </li>
+            )}
           </ul>
         </div>
         <ul className="flex items-center hidden space-x-8 lg:flex">
