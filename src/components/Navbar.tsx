@@ -1,79 +1,23 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { logout } from "../store/authSlice";
 import { Input } from "antd";
 import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
-import { useQuery, useSubscription } from "@apollo/client";
-import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 import { Badge, Avatar, Dropdown } from "antd";
 import NotificationDropdown from "./Notifications";
-import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
-
-type User = {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-};
-
-type Notification = {
-  _id: string;
-  title: string;
-  user?: User | null;
-};
+import { useQuery } from "@apollo/client";
+import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { data } = useQuery(GET_ALL_NOTIFICATIONS);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [notificationCount, setNotificationCount] = useState<number | null>(null); 
-  const [hasRealTimeNotifications, setHasRealTimeNotifications] = useState(false); 
-
-  const { data: notificationData, error } = useSubscription(NOTIFICATIONS_CREATED);
-
-  useEffect(() => {
-    if (data && data.getAllNotifications) {
-      setNotifications(data.getAllNotifications as Notification[]);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    const savedCount = localStorage.getItem("notificationCount");
-    if (savedCount) {
-      setNotificationCount(parseInt(savedCount));
-      setHasRealTimeNotifications(true); 
-    }
-  }, []);
-
-  useEffect(() => {
-    if (notificationData && notificationData.notificationCreated) {
-      setNotifications((prevNotifications) => [
-        notificationData.notificationCreated as Notification,
-        ...prevNotifications,
-      ]);
-      setHasRealTimeNotifications(true);
-      setNotificationCount((prevCount) =>
-        prevCount !== null ? prevCount + 1 : 1
-      ); 
-    }
-  }, [notificationData]);
-
-  useEffect(() => {
-    if (notificationCount !== null) {
-      localStorage.setItem("notificationCount", notificationCount.toString());
-    }
-  }, [notificationCount]);
-
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
+  const { data } = useQuery(GET_ALL_NOTIFICATIONS);
 
   const handleLogout = () => {
     googleLogout();
@@ -92,10 +36,7 @@ export const Navbar = () => {
     }
   };
 
-  const handleNotificationClick = () => {
-    setNotificationCount(0);
-    localStorage.setItem("notificationCount", "0");
-  };
+  console.log(data);
 
   return (
     <div className="px-4 py-5 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
@@ -175,13 +116,18 @@ export const Navbar = () => {
             </li>
 
             <li>
-              <Badge count={hasRealTimeNotifications ? notificationCount : undefined}>
+              <Badge count={data?.getAllNotifications?.notificationsCount || 0}>
                 <Dropdown
-                  overlay={<NotificationDropdown notifications={notifications} />}
+                  overlay={
+                    <NotificationDropdown
+                      notifications={
+                        data?.getAllNotifications?.notifications || []
+                      }
+                    />
+                  }
                   visible={dropdownVisible}
                   onVisibleChange={setDropdownVisible}
                   trigger={["hover"]}
-                  onClick={handleNotificationClick} // Add onClick handler
                 >
                   <Avatar shape="square" size="large" />
                 </Dropdown>
