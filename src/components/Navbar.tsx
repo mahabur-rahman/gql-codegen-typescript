@@ -11,6 +11,20 @@ import NotificationDropdown from "./Notifications";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 
+// Update the Notification type to include __typename
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+interface Notification {
+  _id: string;
+  title: string;
+  user?: User | null;
+}
+
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
@@ -121,7 +135,8 @@ export const Navbar = () => {
                   overlay={
                     <NotificationDropdown
                       notifications={
-                        data?.getAllNotifications?.notifications || []
+                        (data?.getAllNotifications
+                          ?.notifications as Notification[]) || []
                       }
                     />
                   }

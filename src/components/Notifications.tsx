@@ -1,7 +1,26 @@
 import React from "react";
 import { Avatar } from "antd";
 
-const NotificationDropdown = ({ notifications }) => {
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+interface Notification {
+  _id: string;
+  title: string;
+  user?: User | null;
+}
+
+interface NotificationDropdownProps {
+  notifications: Notification[];
+}
+
+const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
+  notifications,
+}) => {
   return (
     <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-72">
       <ul className="p-2">
@@ -17,7 +36,13 @@ const NotificationDropdown = ({ notifications }) => {
                   {notification.title}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {notification?.user?.firstName} {notification?.user?.lastName}
+                  {notification.user ? (
+                    <>
+                      {notification.user.firstName} {notification.user.lastName}
+                    </>
+                  ) : (
+                    "Unknown User"
+                  )}
                 </div>
               </div>
             </li>
