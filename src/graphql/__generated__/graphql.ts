@@ -64,6 +64,7 @@ export type Mutation = {
   likeQuote: Quote;
   placeOrder: PaymentResponseDto;
   replyToComment: Comment;
+  resetNotificationCount: Scalars['String']['output'];
   resetPassword: User;
   sendEmail: Scalars['Boolean']['output'];
   signUp: User;
@@ -223,6 +224,7 @@ export type Query = {
   getAllQuotes: Array<Quote>;
   getAllUsers: Array<User>;
   getCommentsByQuote: Array<Comment>;
+  getNotificationCount: Scalars['Int']['output'];
   getSingleQuoteById: Quote;
   getSingleUserById: User;
   getUserProfile: User;

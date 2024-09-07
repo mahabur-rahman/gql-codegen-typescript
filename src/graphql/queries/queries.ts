@@ -74,3 +74,6 @@ export const GET_ALL_NOTIFICATIONS = gql(`
 }
 
 `);
+
+
+

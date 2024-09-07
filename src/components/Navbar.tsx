@@ -8,9 +8,20 @@ import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
 import { Badge, Avatar, Dropdown } from "antd";
 import NotificationDropdown from "./Notifications";
-import { useQuery, useSubscription } from "@apollo/client";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
+
+
+
+import { gql } from "@apollo/client";
+
+
+export const RESET_NOTIFICATION_COUNT = gql(` 
+  mutation{
+resetNotificationCount
+}
+  `);
 
 interface User {
   _id: string;
@@ -25,6 +36,13 @@ interface Notification {
   user?: User | null;
 }
 
+// Define the types for the mutation response
+interface ResetNotificationCountResponse {
+  resetNotificationCount: {
+    success: boolean;
+  };
+}
+
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const { user } = useSelector((state: RootState) => state.auth);
@@ -36,6 +54,14 @@ export const Navbar = () => {
 
   // Fetch initial notifications count and list
   const { data: queryData } = useQuery(GET_ALL_NOTIFICATIONS);
+
+  // Use the mutation with correct types
+  const [resetNotificationCount] = useMutation<ResetNotificationCountResponse>(RESET_NOTIFICATION_COUNT, {
+    onCompleted: () => {
+      // Optionally handle any additional logic after resetting the count
+      setNotificationsCount(0);
+    },
+  });
 
   useEffect(() => {
     if (queryData?.getAllNotifications) {
@@ -70,6 +96,11 @@ export const Navbar = () => {
       dispatch(setSearchQuery(""));
       navigate(`/quotes`);
     }
+  };
+
+  // Handle badge click to reset notification count
+  const handleBadgeClick = () => {
+    resetNotificationCount(); // Reset notification count
   };
 
   return (
@@ -128,9 +159,9 @@ export const Navbar = () => {
                 Contact
               </Link>
             </li>
-            {notificationsCount > 0 && (
+  
               <li>
-                <Badge count={notificationsCount}>
+                <Badge count={notificationsCount} onClick={handleBadgeClick}>
                   <Dropdown
                     overlay={
                       <NotificationDropdown
@@ -145,7 +176,7 @@ export const Navbar = () => {
                   </Dropdown>
                 </Badge>
               </li>
-            )}
+   
           </ul>
         </div>
         <ul className="flex items-center hidden space-x-8 lg:flex">
