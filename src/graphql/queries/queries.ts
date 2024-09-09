@@ -56,26 +56,24 @@ query getCommentsByQuote($quoteId:String!){
   
 `);
 
-// export const GET_ALL_USERS = gql(` 
-//   query {
-//   getAllUsers{
-//     _id
-//     firstName
-//     email
-//   }
-// }
-  
-//   `);
-
-
-export const GET_ALL_NOTIFICATIONS = gql(` 
-query {
+export const GET_ALL_NOTIFICATIONS = gql(`
+  query GetAllNotifications {
   getAllNotifications {
-    _id
-    title
-  
+    notifications {
+      _id
+      title
+      user {
+        _id
+        firstName
+        lastName
+        email
+      }
+    }
+    notificationsCount
   }
 }
 
-  
-  `);
+`);
+
+
+

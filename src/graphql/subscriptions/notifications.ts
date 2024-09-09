@@ -1,6 +1,6 @@
 import { gql } from "../__generated__";
 
-export const NOTIFICATIONS = gql(`
+export const NOTIFICATIONS_CREATED = gql(`
     subscription notificationCreated {
       notificationCreated {
         _id
