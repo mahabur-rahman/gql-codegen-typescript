@@ -12,10 +12,7 @@ import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
 
-
-
 import { gql } from "@apollo/client";
-
 
 export const RESET_NOTIFICATION_COUNT = gql(` 
   mutation{
@@ -56,17 +53,22 @@ export const Navbar = () => {
   const { data: queryData } = useQuery(GET_ALL_NOTIFICATIONS);
 
   // Use the mutation with correct types
-  const [resetNotificationCount] = useMutation<ResetNotificationCountResponse>(RESET_NOTIFICATION_COUNT, {
-    onCompleted: () => {
-      // Optionally handle any additional logic after resetting the count
-      setNotificationsCount(0);
-    },
-  });
+  const [resetNotificationCount] = useMutation<ResetNotificationCountResponse>(
+    RESET_NOTIFICATION_COUNT,
+    {
+      onCompleted: () => {
+        // Optionally handle any additional logic after resetting the count
+        setNotificationsCount(0);
+      },
+    }
+  );
 
   useEffect(() => {
     if (queryData?.getAllNotifications) {
       setNotifications(queryData.getAllNotifications.notifications || []);
-      setNotificationsCount(queryData.getAllNotifications.notificationsCount || 0);
+      setNotificationsCount(
+        queryData.getAllNotifications.notificationsCount || 0
+      );
     }
   }, [queryData]);
 
@@ -76,7 +78,10 @@ export const Navbar = () => {
   useEffect(() => {
     if (subscriptionData?.notificationCreated) {
       const newNotification = subscriptionData.notificationCreated;
-      setNotifications((prevNotifications) => [newNotification, ...prevNotifications]);
+      setNotifications((prevNotifications) => [
+        newNotification,
+        ...prevNotifications,
+      ]);
       setNotificationsCount((prevCount) => prevCount + 1);
     }
   }, [subscriptionData]);
@@ -159,24 +164,21 @@ export const Navbar = () => {
                 Contact
               </Link>
             </li>
-  
-              <li>
-                <Badge count={notificationsCount} onClick={handleBadgeClick}>
-                  <Dropdown
-                    overlay={
-                      <NotificationDropdown
-                        notifications={notifications}
-                      />
-                    }
-                    visible={dropdownVisible}
-                    onVisibleChange={setDropdownVisible}
-                    trigger={["hover"]}
-                  >
-                    <Avatar shape="square" size="large" />
-                  </Dropdown>
-                </Badge>
-              </li>
-   
+
+            <li>
+              <Badge count={notificationsCount} onClick={handleBadgeClick}>
+                <Dropdown
+                  overlay={
+                    <NotificationDropdown notifications={notifications} />
+                  }
+                  visible={dropdownVisible}
+                  onVisibleChange={setDropdownVisible}
+                  trigger={["hover"]}
+                >
+                  <Avatar shape="square" size="large" />
+                </Dropdown>
+              </Badge>
+            </li>
           </ul>
         </div>
         <ul className="flex items-center hidden space-x-8 lg:flex">
