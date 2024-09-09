@@ -8,37 +8,16 @@ import { setSearchQuery } from "../store/searchSlice";
 import { googleLogout } from "@react-oauth/google";
 import { Badge, Avatar, Dropdown } from "antd";
 import NotificationDropdown from "./Notifications";
-import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { GET_ALL_NOTIFICATIONS } from "../graphql/queries/queries";
 import { NOTIFICATIONS_CREATED } from "../graphql/subscriptions/notifications";
-
-import { gql } from "@apollo/client";
+import { Notification } from "../interface/interface";
 
 export const RESET_NOTIFICATION_COUNT = gql(` 
   mutation{
 resetNotificationCount
 }
   `);
-
-interface User {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-interface Notification {
-  _id: string;
-  title: string;
-  user?: User | null;
-}
-
-// Define the types for the mutation response
-interface ResetNotificationCountResponse {
-  resetNotificationCount: {
-    success: boolean;
-  };
-}
 
 export const Navbar = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
@@ -48,20 +27,14 @@ export const Navbar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationsCount, setNotificationsCount] = useState(0);
-
-  // Fetch initial notifications count and list
   const { data: queryData } = useQuery(GET_ALL_NOTIFICATIONS);
 
-  // Use the mutation with correct types
-  const [resetNotificationCount] = useMutation<ResetNotificationCountResponse>(
-    RESET_NOTIFICATION_COUNT,
-    {
-      onCompleted: () => {
-        // Optionally handle any additional logic after resetting the count
-        setNotificationsCount(0);
-      },
-    }
-  );
+  const [resetNotificationCount] = useMutation(RESET_NOTIFICATION_COUNT, {
+    onCompleted: () => {
+      // Handle additional logic after resetting the count
+      setNotificationsCount(0);
+    },
+  });
 
   useEffect(() => {
     if (queryData?.getAllNotifications) {
@@ -74,6 +47,8 @@ export const Navbar = () => {
 
   // Handle new notifications
   const { data: subscriptionData } = useSubscription(NOTIFICATIONS_CREATED);
+
+  console.log(subscriptionData)
 
   useEffect(() => {
     if (subscriptionData?.notificationCreated) {
@@ -103,9 +78,8 @@ export const Navbar = () => {
     }
   };
 
-  // Handle badge click to reset notification count
   const handleBadgeClick = () => {
-    resetNotificationCount(); // Reset notification count
+    resetNotificationCount();
   };
 
   return (
@@ -117,9 +91,7 @@ export const Navbar = () => {
             aria-label="Company"
             title="Company"
             className="inline-flex items-center mr-8"
-          >
-            {/* Company Logo */}
-          </Link>
+          ></Link>
           <div className="mx-12">
             <Input placeholder="Enter keyword" onChange={handleSearch} />
           </div>
@@ -166,17 +138,19 @@ export const Navbar = () => {
             </li>
 
             <li>
-              <Badge count={notificationsCount} onClick={handleBadgeClick}>
-                <Dropdown
-                  overlay={
-                    <NotificationDropdown notifications={notifications} />
-                  }
-                  visible={dropdownVisible}
-                  onVisibleChange={setDropdownVisible}
-                  trigger={["hover"]}
-                >
-                  <Avatar shape="square" size="large" />
-                </Dropdown>
+              <Badge count={notificationsCount}>
+                <span onClick={handleBadgeClick}>
+                  <Dropdown
+                    overlay={
+                      <NotificationDropdown notifications={notifications} />
+                    }
+                    visible={dropdownVisible}
+                    onVisibleChange={setDropdownVisible}
+                    trigger={["hover"]}
+                  >
+                    <Avatar shape="square" size="large" />
+                  </Dropdown>
+                </span>
               </Badge>
             </li>
           </ul>

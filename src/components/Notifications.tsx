@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Avatar } from "antd";
 
 interface User {
@@ -38,7 +38,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 <div className="text-sm text-gray-500">
                   {notification.user ? (
                     <>
-                      {notification.user.firstName} {notification.user.lastName}
+                      {notification.user.firstName} {notification.user.email}
                     </>
                   ) : (
                     "Unknown User"

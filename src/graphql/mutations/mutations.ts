@@ -178,8 +178,3 @@ export const PAYMENT = gql(`
 
   `);
 
-export const RESET_NOTIFICATION_COUNT = gql(` 
-    mutation{
-  resetNotificationCount
-  }
-    `);
