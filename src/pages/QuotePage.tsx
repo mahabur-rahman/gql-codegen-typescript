@@ -9,19 +9,61 @@ import {
   LIKE_QUOTE,
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
-import { Modal, Rate, Flex } from "antd";
+import { Modal, Rate, Flex, Input, Radio, Checkbox } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
 
+const languages = [
+  { label: "English", count: 4082 },
+  { label: "Español", count: 837 },
+  { label: "Türkçe", count: 322 },
+  { label: "Português", count: 638 },
+  { label: "العربية", count: 178 },
+  { label: "日本語", count: 288 },
+];
+
+const durations = [
+  { label: "0-1 Hour", count: 531 },
+  { label: "1-3 Hours", count: 1894 },
+  { label: "3-6 Hours", count: 1580 },
+  { label: "6-17 Hours", count: 2345, disabled: true }, // Example of disabled option
+];
+
+const features = [
+  { label: "Feature A", count: 10 },
+  { label: "Feature B", count: 5 },
+  { label: "Feature C", count: 8 },
+  { label: "Feature D", count: 3 },
+];
+
+const topics = [
+  { label: "Topic 1", count: 20 },
+  { label: "Topic 2", count: 15 },
+  { label: "Topic 3", count: 7 },
+  { label: "Topic 4", count: 12 },
+];
+
+const levels = [
+  { label: "Beginner", count: 25 },
+  { label: "Intermediate", count: 18 },
+  { label: "Advanced", count: 12 },
+  { label: "Expert", count: 5 },
+];
+
+const prices = [
+  { label: "Free", count: 10 },
+  { label: "Paid", count: 25 },
+];
+
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
   const [deleteQuoteMutation, { error }] = useMutation(DELETE_QUOTE);
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
-  const [increaseRatingMutation] = useMutation(INCREASE_RATING)
+  const [increaseRatingMutation] = useMutation(INCREASE_RATING);
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -60,9 +102,7 @@ const QuotePage = () => {
   const searchParams = new URLSearchParams(location.search);
   const title = searchParams.get("title");
 
-  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
-    variables: { title: title || undefined },
-  });
+  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES);
 
   // for modal
   const showModal = (quoteId: string, createById: string) => {
@@ -204,7 +244,7 @@ const QuotePage = () => {
     setIsModalOpenDislike(false);
   };
 
-  // rating 
+  // rating
   const handleRatingChange = async (quoteId: string, rating: number) => {
     try {
       await increaseRatingMutation({
@@ -212,10 +252,9 @@ const QuotePage = () => {
       });
       await refetch();
     } catch (error) {
-      console.error('Error increasing rating:', error);
+      console.error("Error increasing rating:", error);
     }
   };
-  
 
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
@@ -230,13 +269,13 @@ const QuotePage = () => {
         </div>
 
         {/* rating */}
-     {/* Rating */}
-     <Flex gap="middle" vertical>
-      <Rate
-        value={quote.rating}
-        onChange={(value) => handleRatingChange(quote._id, value)}
-      />
-    </Flex>
+        {/* Rating */}
+        <Flex gap="middle" vertical>
+          <Rate
+            value={quote.rating}
+            onChange={(value) => handleRatingChange(quote._id, value)}
+          />
+        </Flex>
 
         <div
           aria-label=""
@@ -347,60 +386,165 @@ const QuotePage = () => {
   ));
 
   return (
-    <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
-      <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
-        <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
-          All Feeds ---- {data?.getAllQuotes.length} results
-        </h2>
+    <>
+      <div style={{ padding: "100px", backgroundColor: "#e2e8f0" }}>
+        <h3
+          style={{
+            marginBottom: "16px",
+            fontSize: "24px",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Advance Filter..
+        </h3>
+        <Input placeholder="Basic usage" style={{ marginBottom: "16px" }} />
+
+        <div
+          style={{
+            padding: "10px",
+            backgroundColor: "white",
+            borderRadius: "8px",
+          }}
+        >
+          <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
+          <Radio.Group>
+            <Radio style={{ display: "block" }} value={1}>
+              <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
+            </Radio>
+            <Radio style={{ display: "block" }} value={2}>
+              <span>⭐⭐⭐ 4.0 & up (7,839)</span>
+            </Radio>
+            <Radio style={{ display: "block" }} value={3}>
+              <span>⭐⭐ 3.5 & up (9,305)</span>
+            </Radio>
+            <Radio style={{ display: "block" }} value={4}>
+              <span>⭐ 3.0 & up (9,813)</span>
+            </Radio>
+          </Radio.Group>
+        </div>
+
+        <div className="p-6 bg-white rounded-md shadow-sm">
+          <h4 className="mb-4 text-lg font-bold">Language</h4>
+          <div className="space-y-2">
+            {languages.map((language) => (
+              <Checkbox key={language.label}>
+                {`${language.label} (${language.count})`}
+              </Checkbox>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 bg-white rounded-md shadow-sm">
+          <h4 className="mb-4 text-lg font-bold">Video Duration</h4>
+          <div className="space-y-2">
+            {durations.map((duration) => (
+              <Checkbox key={duration.label}>
+                {`${duration.label} (${duration.count})`}
+              </Checkbox>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 bg-white rounded-md shadow-sm">
+          <h4 className="mb-4 text-lg font-bold">Features</h4>
+          <div className="space-y-2">
+            {features.map((feature) => (
+              <Checkbox key={feature.label}>
+                {`${feature.label} (${feature.count})`}
+              </Checkbox>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 bg-white rounded-md shadow-sm">
+          <h4 className="mb-4 text-lg font-bold">Topics</h4>
+          <div className="space-y-2">
+            {topics.map((topic) => (
+              <Checkbox key={topic.label}>
+                {`${topic.label} (${topic.count})`}
+              </Checkbox>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 bg-white rounded-md shadow-sm">
+          <h4 className="mb-4 text-lg font-bold">Levels</h4>
+          <div className="space-y-2">
+            {levels.map((level) => (
+              <Checkbox key={level.label}>
+                {`${level.label} (${level.count})`}
+              </Checkbox>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 bg-white rounded-md shadow-sm">
+          <h4 className="mb-4 text-lg font-bold">Price</h4>
+          <div className="space-y-2">
+            {prices.map((price) => (
+              <Checkbox key={price.label}>
+                {`${price.label} (${price.count})`}
+              </Checkbox>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
-        <div className="max-w-md sm:mx-auto sm:text-center">{quotes}</div>
+      <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
+        <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
+          <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
+            All Feeds ---- {data?.getAllQuotes.length} results
+          </h2>
+        </div>
+        <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
+          <div className="max-w-md sm:mx-auto sm:text-center">{quotes}</div>
 
-        {error && <h2 className="text-red-500">Error : {error.message}</h2>}
+          {error && <h2 className="text-red-500">Error : {error.message}</h2>}
 
-        {/* modal show */}
-        <Modal
-          title="Update Quote title"
-          open={isModalOpen}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        >
-          <input
-            type="text"
-            placeholder="Enter your quote title.."
-            onChange={handleTitleChange}
-          />
-        </Modal>
+          {/* modal show */}
+          <Modal
+            title="Update Quote title"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <input
+              type="text"
+              placeholder="Enter your quote title.."
+              onChange={handleTitleChange}
+            />
+          </Modal>
 
-        {/* like  */}
-        <Modal
-          title="Whose are likes a quote"
-          open={isModalOpenLike}
-          onOk={handleOkLike}
-          onCancel={handleCancelLike}
-        >
-          {likesInfo?.map((info) => (
-            <div key={info._id}>
-              <p>{info.firstName}</p>
-            </div>
-          ))}
-        </Modal>
+          {/* like  */}
+          <Modal
+            title="Whose are likes a quote"
+            open={isModalOpenLike}
+            onOk={handleOkLike}
+            onCancel={handleCancelLike}
+          >
+            {likesInfo?.map((info) => (
+              <div key={info._id}>
+                <p>{info.firstName}</p>
+              </div>
+            ))}
+          </Modal>
 
-        {/* dislike */}
-        <Modal
-          title="Whose are dislikes a quote.."
-          open={isModalOpenDislike}
-          onOk={handleOkDislike}
-          onCancel={handleCancelDislike}
-        >
-          {disLikesInfo?.map((info) => (
-            <div key={info._id}>
-              <p>{info.firstName}</p>
-            </div>
-          ))}
-        </Modal>
+          {/* dislike */}
+          <Modal
+            title="Whose are dislikes a quote.."
+            open={isModalOpenDislike}
+            onOk={handleOkDislike}
+            onCancel={handleCancelDislike}
+          >
+            {disLikesInfo?.map((info) => (
+              <div key={info._id}>
+                <p>{info.firstName}</p>
+              </div>
+            ))}
+          </Modal>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
