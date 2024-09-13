@@ -12,7 +12,7 @@ import {
 import { Modal, Rate, Flex, Input, Radio, Checkbox } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
 import {
@@ -74,6 +74,18 @@ const QuotePage = () => {
   const title = searchParams.get("title");
 
   const { data, loading, refetch } = useQuery(GET_ALL_QUOTES);
+
+  // ADVANCE FILTER
+  useEffect(() => {
+    const storedQuery = localStorage.getItem("searchQuery");
+    if (storedQuery) {
+      dispatch(setQuery(storedQuery));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem("searchQuery", query);
+  }, [query]);
 
   // for modal
   const showModal = (quoteId: string, createById: string) => {
@@ -227,8 +239,7 @@ const QuotePage = () => {
     }
   };
 
-
-  // Advance filtering 
+  // Advance filtering
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setQuery(e.target.value));
   };
