@@ -10,13 +10,20 @@ import {
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
 import { Modal, Rate, Flex, Input, Radio, Checkbox } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
-import { durations, languages, levels, prices, topics, features } from "../data";
-
+import {
+  durations,
+  languages,
+  levels,
+  prices,
+  topics,
+  features,
+} from "../data";
+import { setQuery } from "../store/advanceFilterSlice";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -24,6 +31,10 @@ const QuotePage = () => {
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
+  const dispatch = useDispatch();
+  const query = useSelector((state: RootState) => state.advanceFilter.query);
+
+  console.log(query);
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -216,6 +227,12 @@ const QuotePage = () => {
     }
   };
 
+
+  // Advance filtering 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setQuery(e.target.value));
+  };
+
   const quotes = data?.getAllQuotes?.map((quote) => (
     <>
       <div key={quote._id} className="my-8">
@@ -358,7 +375,14 @@ const QuotePage = () => {
         >
           Advance Filter..
         </h3>
-        <Input placeholder="Basic usage" style={{ marginBottom: "16px" }} />
+
+        <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Search :</h4>
+        <Input
+          placeholder="Search Quotes.."
+          className="p-4"
+          value={query}
+          onChange={handleChange}
+        />
 
         <div
           style={{
@@ -369,16 +393,16 @@ const QuotePage = () => {
         >
           <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
           <Radio.Group>
-            <Radio  value={1}>
+            <Radio value={1}>
               <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
             </Radio>
-            <Radio  value={2}>
+            <Radio value={2}>
               <span>⭐⭐⭐ 4.0 & up (7,839)</span>
             </Radio>
-            <Radio  value={3}>
+            <Radio value={3}>
               <span>⭐⭐ 3.5 & up (9,305)</span>
             </Radio>
-            <Radio  value={4}>
+            <Radio value={4}>
               <span>⭐ 3.0 & up (9,813)</span>
             </Radio>
           </Radio.Group>
