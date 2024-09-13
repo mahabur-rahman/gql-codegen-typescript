@@ -48,7 +48,6 @@ export const Navbar = () => {
   // Handle new notifications
   const { data: subscriptionData } = useSubscription(NOTIFICATIONS_CREATED);
 
-  console.log(subscriptionData)
 
   useEffect(() => {
     if (subscriptionData?.notificationCreated) {

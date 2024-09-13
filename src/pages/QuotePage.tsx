@@ -15,48 +15,8 @@ import { RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
+import { durations, languages, levels, prices, topics, features } from "../data";
 
-const languages = [
-  { label: "English", count: 4082 },
-  { label: "Español", count: 837 },
-  { label: "Türkçe", count: 322 },
-  { label: "Português", count: 638 },
-  { label: "العربية", count: 178 },
-  { label: "日本語", count: 288 },
-];
-
-const durations = [
-  { label: "0-1 Hour", count: 531 },
-  { label: "1-3 Hours", count: 1894 },
-  { label: "3-6 Hours", count: 1580 },
-  { label: "6-17 Hours", count: 2345, disabled: true }, // Example of disabled option
-];
-
-const features = [
-  { label: "Feature A", count: 10 },
-  { label: "Feature B", count: 5 },
-  { label: "Feature C", count: 8 },
-  { label: "Feature D", count: 3 },
-];
-
-const topics = [
-  { label: "Topic 1", count: 20 },
-  { label: "Topic 2", count: 15 },
-  { label: "Topic 3", count: 7 },
-  { label: "Topic 4", count: 12 },
-];
-
-const levels = [
-  { label: "Beginner", count: 25 },
-  { label: "Intermediate", count: 18 },
-  { label: "Advanced", count: 12 },
-  { label: "Expert", count: 5 },
-];
-
-const prices = [
-  { label: "Free", count: 10 },
-  { label: "Paid", count: 25 },
-];
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -409,16 +369,16 @@ const QuotePage = () => {
         >
           <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
           <Radio.Group>
-            <Radio style={{ display: "block" }} value={1}>
+            <Radio  value={1}>
               <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
             </Radio>
-            <Radio style={{ display: "block" }} value={2}>
+            <Radio  value={2}>
               <span>⭐⭐⭐ 4.0 & up (7,839)</span>
             </Radio>
-            <Radio style={{ display: "block" }} value={3}>
+            <Radio  value={3}>
               <span>⭐⭐ 3.5 & up (9,305)</span>
             </Radio>
-            <Radio style={{ display: "block" }} value={4}>
+            <Radio  value={4}>
               <span>⭐ 3.0 & up (9,813)</span>
             </Radio>
           </Radio.Group>
