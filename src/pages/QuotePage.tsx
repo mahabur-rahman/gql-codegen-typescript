@@ -29,9 +29,8 @@ const QuotePage = () => {
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-
 
   // const dispatch = useDispatch();
   // const query = useSelector((state: RootState) => state.advanceFilter.query);
@@ -69,17 +68,14 @@ const QuotePage = () => {
 
   const { user } = useSelector((state: RootState) => state?.auth);
 
- // Initialize quotes fetching
- const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
-  variables: {
-    filters: { title: '' }, // Initial fetch with no search filter
-  },
-});
+  // Initialize quotes fetching
+  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
+    variables: {
+      filters: { title: "" }, // Initial fetch with no search filter
+    },
+  });
 
-if(loading) return <h2>Loading...</h2>
-
-
-
+  if (loading) return <h2>Loading...</h2>;
 
   // Handle search and refetch quotes with search filter
   const handleSearch = () => {
@@ -92,7 +88,6 @@ if(loading) return <h2>Loading...</h2>
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
-
 
   console.log(`Filter data: `, data);
 
@@ -260,7 +255,6 @@ if(loading) return <h2>Loading...</h2>
           {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
         </div>
 
-        {/* rating */}
         {/* Rating */}
         <Flex gap="middle" vertical>
           <Rate
@@ -276,7 +270,7 @@ if(loading) return <h2>Loading...</h2>
           {quote?.createBy?.email}
         </div>
 
-        {quote.images?.map((item) => (
+        {quote?.images?.map((item) => (
           <div
             aria-label=""
             className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
@@ -285,7 +279,7 @@ if(loading) return <h2>Loading...</h2>
           </div>
         ))}
 
-        {quote.videos?.map((item, index) => (
+        {quote?.videos?.map((item, index) => (
           <div
             key={index}
             aria-label=""
@@ -377,9 +371,6 @@ if(loading) return <h2>Loading...</h2>
     </>
   ));
 
-
-  
-
   return (
     <>
       <div style={{ padding: "100px", backgroundColor: "#e2e8f0" }}>
@@ -396,13 +387,12 @@ if(loading) return <h2>Loading...</h2>
 
         <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Search :</h4>
         <div className="flex">
-        <Input
-  placeholder="Search Quotes.."
-  className="p-4"
-  value={searchValue}
-  onChange={handleChange}
-/>
-
+          <Input
+            placeholder="Search Quotes.."
+            className="p-4"
+            value={searchValue}
+            onChange={handleChange}
+          />
 
           <button className="p-3 bg-red-400" onClick={handleSearch}>
             Search
