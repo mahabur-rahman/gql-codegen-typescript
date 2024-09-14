@@ -73,6 +73,10 @@ const CreateFeed = () => {
             title,
             images: imageUrls,
             videos: videoUrls,
+            languages: "English",
+            price: "100",      // Replace with the actual price value
+            duration: "6+ hours",
+            price: "Paid"
           },
         },
       });
