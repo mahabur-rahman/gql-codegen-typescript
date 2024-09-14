@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
-import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import {
   DELETE_QUOTE,
@@ -10,9 +9,9 @@ import {
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
 import { Modal, Rate, Flex, Input, Radio, Checkbox } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
 import {
@@ -23,7 +22,6 @@ import {
   topics,
   features,
 } from "../data";
-import { setQuery } from "../store/advanceFilterSlice";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -31,10 +29,12 @@ const QuotePage = () => {
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
-  const dispatch = useDispatch();
-  const query = useSelector((state: RootState) => state.advanceFilter.query);
+  const [searchValue, setSearchValue] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
-  console.log(query);
+
+  // const dispatch = useDispatch();
+  // const query = useSelector((state: RootState) => state.advanceFilter.query);
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -69,23 +69,32 @@ const QuotePage = () => {
 
   const { user } = useSelector((state: RootState) => state?.auth);
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const title = searchParams.get("title");
+ // Initialize quotes fetching
+ const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
+  variables: {
+    filters: { title: '' }, // Initial fetch with no search filter
+  },
+});
 
-  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES);
+if(loading) return <h2>Loading...</h2>
 
-  // ADVANCE FILTER
-  useEffect(() => {
-    const storedQuery = localStorage.getItem("searchQuery");
-    if (storedQuery) {
-      dispatch(setQuery(storedQuery));
-    }
-  }, [dispatch]);
 
-  useEffect(() => {
-    localStorage.setItem("searchQuery", query);
-  }, [query]);
+
+
+  // Handle search and refetch quotes with search filter
+  const handleSearch = () => {
+    setHasSearched(true);
+    refetch({
+      filters: { title: searchValue },
+    });
+  };
+  // Advance filtering
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
+
+  console.log(`Filter data: `, data);
 
   // for modal
   const showModal = (quoteId: string, createById: string) => {
@@ -152,7 +161,7 @@ const QuotePage = () => {
     }
   };
 
-  if (loading) return <h1>Loading...</h1>;
+  // if (loading) return <h1>Loading...</h1>;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdateQuoteTitle(e.target.value);
@@ -237,11 +246,6 @@ const QuotePage = () => {
     } catch (error) {
       console.error("Error increasing rating:", error);
     }
-  };
-
-  // Advance filtering
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setQuery(e.target.value));
   };
 
   const quotes = data?.getAllQuotes?.map((quote) => (
@@ -373,6 +377,9 @@ const QuotePage = () => {
     </>
   ));
 
+
+  
+
   return (
     <>
       <div style={{ padding: "100px", backgroundColor: "#e2e8f0" }}>
@@ -388,13 +395,19 @@ const QuotePage = () => {
         </h3>
 
         <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Search :</h4>
+        <div className="flex">
         <Input
-          placeholder="Search Quotes.."
-          className="p-4"
-          value={query}
-          onChange={handleChange}
-        />
+  placeholder="Search Quotes.."
+  className="p-4"
+  value={searchValue}
+  onChange={handleChange}
+/>
 
+
+          <button className="p-3 bg-red-400" onClick={handleSearch}>
+            Search
+          </button>
+        </div>
         <div
           style={{
             padding: "10px",
