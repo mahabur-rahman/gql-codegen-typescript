@@ -36,6 +36,8 @@ const QuotePage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const query = useSelector((state: RootState) => state.advanceFilter.query);
 
+  console.log(query)
+
 
 
 
@@ -101,7 +103,7 @@ const QuotePage = () => {
     setSearchValue(e.target.value);
   };
 
-  console.log(`Filter data: `, data);
+  // console.log(`Filter data: `, data);
 
   // for modal
   const showModal = (quoteId: string, createById: string) => {
