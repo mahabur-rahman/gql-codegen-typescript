@@ -9,8 +9,8 @@ import {
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
 import { Modal, Rate, Flex, Input, Radio, Checkbox } from "antd";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
@@ -22,6 +22,7 @@ import {
   topics,
   features,
 } from "../data";
+import { setQuery } from "../store/advanceFilterSlice";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -31,6 +32,12 @@ const QuotePage = () => {
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
   const [searchValue, setSearchValue] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  // rating filter 
+  const dispatch = useDispatch<AppDispatch>();
+  const query = useSelector((state: RootState) => state.advanceFilter.query);
+
+
+
 
   // const dispatch = useDispatch();
   // const query = useSelector((state: RootState) => state.advanceFilter.query);
@@ -65,6 +72,11 @@ const QuotePage = () => {
   const accessToken = useSelector(
     (state: RootState) => state?.auth?.accessToken
   );
+
+
+  const handleAdvanceRatingChange = (e: any) => {
+    dispatch(setQuery(e.target.value));
+  };
 
   const { user } = useSelector((state: RootState) => state?.auth);
 
@@ -399,28 +411,28 @@ const QuotePage = () => {
           </button>
         </div>
         <div
-          style={{
-            padding: "10px",
-            backgroundColor: "white",
-            borderRadius: "8px",
-          }}
-        >
-          <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
-          <Radio.Group>
-            <Radio value={1}>
-              <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
-            </Radio>
-            <Radio value={2}>
-              <span>⭐⭐⭐ 4.0 & up (7,839)</span>
-            </Radio>
-            <Radio value={3}>
-              <span>⭐⭐ 3.5 & up (9,305)</span>
-            </Radio>
-            <Radio value={4}>
-              <span>⭐ 3.0 & up (9,813)</span>
-            </Radio>
-          </Radio.Group>
-        </div>
+      style={{
+        padding: '10px',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+      }}
+    >
+      <h4 style={{ fontSize: '18px', fontWeight: 'bold' }}>Ratings</h4>
+      <Radio.Group onChange={handleAdvanceRatingChange} value={query}>
+        <Radio value={1}>
+          <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
+        </Radio>
+        <Radio value={2}>
+          <span>⭐⭐⭐ 4.0 & up (7,839)</span>
+        </Radio>
+        <Radio value={3}>
+          <span>⭐⭐ 3.5 & up (9,305)</span>
+        </Radio>
+        <Radio value={4}>
+          <span>⭐ 3.0 & up (9,813)</span>
+        </Radio>
+      </Radio.Group>
+    </div>
 
         <div className="p-6 bg-white rounded-md shadow-sm">
           <h4 className="mb-4 text-lg font-bold">Language</h4>
