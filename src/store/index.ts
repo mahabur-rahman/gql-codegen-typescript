@@ -1,22 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import authReducer from "./authSlice";
-import advanceFilterReducer from "./advanceFilterSlice"; // Ensure you create this file
-
+import { configureStore } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import authReducer from './authSlice';
+import advanceFilterReducer from './advanceFilterSlice';
 
 const persistConfig = {
-  key: "root",
+  key: 'root',
   storage,
-  whitelist: ["advanceFilter"],
+  whitelist: ['advanceFilter'], // Only persist the advanceFilter slice
 };
-
 
 const persistedAdvanceFilterReducer = persistReducer(
   persistConfig,
   advanceFilterReducer
 );
-
 
 export const store = configureStore({
   reducer: {
@@ -24,7 +21,6 @@ export const store = configureStore({
     advanceFilter: persistedAdvanceFilterReducer,
   },
 });
-
 
 export const persistor = persistStore(store);
 
