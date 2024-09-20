@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import authReducer from "./authSlice";
-import advanceFilterReducer from "./advanceFilterSlice"; // Ensure this is updated
+import advanceFilterReducer from "./advanceFilterSlice";
 import { combineReducers } from "redux";
 import storage from "redux-persist/lib/storage";
 
@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["advanceFilter"], // Ensure advanceFilter is persisted
+  whitelist: ["auth", "advanceFilter"], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
