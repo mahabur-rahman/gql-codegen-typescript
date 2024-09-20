@@ -1,22 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AdvanceFilterState {
-  query: string;
+  rating: number | null; // Only keep the rating property
 }
 
 const initialState: AdvanceFilterState = {
-  query: '',
+  rating: null, // Initialize to null or a default value
 };
 
 const advanceFilterSlice = createSlice({
   name: 'advanceFilter',
   initialState,
   reducers: {
-    setQuery(state, action: PayloadAction<string>) {
-      state.query = action.payload;
+    setRating(state, action: PayloadAction<number | null>) { // Action to set rating
+      state.rating = action.payload;
     },
   },
 });
 
-export const { setQuery } = advanceFilterSlice.actions;
+export const { setRating } = advanceFilterSlice.actions;
 export default advanceFilterSlice.reducer;

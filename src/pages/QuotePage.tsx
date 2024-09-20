@@ -22,7 +22,7 @@ import {
   topics,
   features,
 } from "../data";
-import { setQuery } from "../store/advanceFilterSlice";
+import { setRating } from "../store/advanceFilterSlice";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -32,9 +32,9 @@ const QuotePage = () => {
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
   const [searchValue, setSearchValue] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+
   const dispatch = useDispatch<AppDispatch>();
   const query = useSelector((state: RootState) => state.advanceFilter.query);
-
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -67,16 +67,16 @@ const QuotePage = () => {
     (state: RootState) => state?.auth?.accessToken
   );
 
-
   const handleAdvanceRatingChange = (e: any) => {
-    dispatch(setQuery(e.target.value));
+    const selectedRating = e.target.value ? Number(e.target.value) : null; // Ensure it's a number
+    dispatch(setRating(selectedRating)); // Update Redux state
+    refetch({ filters: { title: searchValue, rating: selectedRating } }); // Refetch with the new filter
   };
-
   const { user } = useSelector((state: RootState) => state?.auth);
 
   const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
     variables: {
-      filters: { title: "" }, 
+      filters: { title: "", minRating: query },
     },
   });
 
@@ -92,8 +92,6 @@ const QuotePage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
-
-
 
   const showModal = (quoteId: string, createById: string) => {
     if (!accessToken) {
@@ -130,7 +128,6 @@ const QuotePage = () => {
     setIsModalOpen(false);
   };
 
-
   const handleDelete = async (quoteId: string, createdById: string) => {
     try {
       if (!accessToken) {
@@ -156,7 +153,6 @@ const QuotePage = () => {
       console.error("Error deleting quote:", error);
     }
   };
-
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdateQuoteTitle(e.target.value);
@@ -397,28 +393,28 @@ const QuotePage = () => {
           </button>
         </div>
         <div
-      style={{
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-      }}
-    >
-      <h4 style={{ fontSize: '18px', fontWeight: 'bold' }}>Ratings</h4>
-      <Radio.Group onChange={handleAdvanceRatingChange} value={query}>
-        <Radio value={1}>
-          <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
-        </Radio>
-        <Radio value={2}>
-          <span>⭐⭐⭐ 4.0 & up (7,839)</span>
-        </Radio>
-        <Radio value={3}>
-          <span>⭐⭐ 3.5 & up (9,305)</span>
-        </Radio>
-        <Radio value={4}>
-          <span>⭐ 3.0 & up (9,813)</span>
-        </Radio>
-      </Radio.Group>
-    </div>
+          style={{
+            padding: "10px",
+            backgroundColor: "white",
+            borderRadius: "8px",
+          }}
+        >
+          <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
+          <Radio.Group onChange={handleAdvanceRatingChange} value={query}>
+            <Radio value={1}>
+              <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
+            </Radio>
+            <Radio value={2}>
+              <span>⭐⭐⭐ 4.0 & up (7,839)</span>
+            </Radio>
+            <Radio value={3}>
+              <span>⭐⭐ 3.5 & up (9,305)</span>
+            </Radio>
+            <Radio value={4}>
+              <span>⭐ 3.0 & up (9,813)</span>
+            </Radio>
+          </Radio.Group>
+        </div>
 
         <div className="p-6 bg-white rounded-md shadow-sm">
           <h4 className="mb-4 text-lg font-bold">Language</h4>
