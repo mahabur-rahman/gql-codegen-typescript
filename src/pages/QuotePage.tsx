@@ -23,6 +23,7 @@ import {
   features,
 } from "../data";
 import { setRating } from "../store/advanceFilterSlice";
+import { RadioChangeEvent } from "antd/lib";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -34,7 +35,7 @@ const QuotePage = () => {
   const [hasSearched, setHasSearched] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
-  const query = useSelector((state: RootState) => state.advanceFilter.query);
+  const rating = useSelector((state: RootState) => state.advanceFilter.rating);
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -67,16 +68,16 @@ const QuotePage = () => {
     (state: RootState) => state?.auth?.accessToken
   );
 
-  const handleAdvanceRatingChange = (e: any) => {
-    const selectedRating = e.target.value ? Number(e.target.value) : null; // Ensure it's a number
-    dispatch(setRating(selectedRating)); // Update Redux state
-    refetch({ filters: { title: searchValue, rating: selectedRating } }); // Refetch with the new filter
+  const handleAdvanceRatingChange = (e: RadioChangeEvent) => {
+    const selectedRating = e.target.value;
+    dispatch(setRating(selectedRating));
   };
+
   const { user } = useSelector((state: RootState) => state?.auth);
 
   const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
     variables: {
-      filters: { title: "", minRating: query },
+      filters: { title: "", minRating: rating },
     },
   });
 
@@ -400,7 +401,7 @@ const QuotePage = () => {
           }}
         >
           <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
-          <Radio.Group onChange={handleAdvanceRatingChange} value={query}>
+          <Radio.Group onChange={handleAdvanceRatingChange} value={rating}>
             <Radio value={1}>
               <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
             </Radio>
