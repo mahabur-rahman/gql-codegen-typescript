@@ -32,17 +32,9 @@ const QuotePage = () => {
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
   const [searchValue, setSearchValue] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-  // rating filter 
   const dispatch = useDispatch<AppDispatch>();
   const query = useSelector((state: RootState) => state.advanceFilter.query);
 
-  console.log(query)
-
-
-
-
-  // const dispatch = useDispatch();
-  // const query = useSelector((state: RootState) => state.advanceFilter.query);
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -82,30 +74,27 @@ const QuotePage = () => {
 
   const { user } = useSelector((state: RootState) => state?.auth);
 
-  // Initialize quotes fetching
   const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
     variables: {
-      filters: { title: "" }, // Initial fetch with no search filter
+      filters: { title: "" }, 
     },
   });
 
   if (loading) return <h2>Loading...</h2>;
 
-  // Handle search and refetch quotes with search filter
   const handleSearch = () => {
     setHasSearched(true);
     refetch({
       filters: { title: searchValue },
     });
   };
-  // Advance filtering
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
 
-  // console.log(`Filter data: `, data);
 
-  // for modal
+
   const showModal = (quoteId: string, createById: string) => {
     if (!accessToken) {
       alert("Access token is missing. Please login to update quotes.");
@@ -131,7 +120,6 @@ const QuotePage = () => {
         },
       });
       console.log(`response: `, response.data?.updateQuote);
-      // Refetch the getAllQuotes query to update the UI after update
       await refetch();
     } catch (err) {
       console.log(err);
@@ -142,7 +130,7 @@ const QuotePage = () => {
     setIsModalOpen(false);
   };
 
-  // delete quote
+
   const handleDelete = async (quoteId: string, createdById: string) => {
     try {
       if (!accessToken) {
@@ -163,20 +151,17 @@ const QuotePage = () => {
 
       console.log("Quote deleted successfully:", response);
 
-      // Refetch the getAllQuotes query to update the UI after deletion
       await refetch();
     } catch (error) {
       console.error("Error deleting quote:", error);
     }
   };
 
-  // if (loading) return <h1>Loading...</h1>;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdateQuoteTitle(e.target.value);
   };
 
-  // like a quote
   const likeQuote = async (quoteId: string) => {
     try {
       await likeQuoteMutation({
@@ -245,7 +230,6 @@ const QuotePage = () => {
     setIsModalOpenDislike(false);
   };
 
-  // rating
   const handleRatingChange = async (quoteId: string, rating: number) => {
     try {
       await increaseRatingMutation({
