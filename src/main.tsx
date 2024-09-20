@@ -10,11 +10,13 @@ import {
   split,
 } from "@apollo/client";
 import { BrowserRouter as Router } from "react-router-dom";
-import { store } from "./store/index.ts";
+import { store, persistor  } from "./store/index.ts";
 import { Provider } from "react-redux";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { setContext } from "@apollo/client/link/context";
+import { PersistGate } from 'redux-persist/integration/react';
+
 
 // HTTP link for queries and mutations
 const httpLink = new HttpLink({
@@ -67,11 +69,13 @@ const client = new ApolloClient({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <ApolloProvider client={client}>
-        <Router>
-          <App />
-        </Router>
-      </ApolloProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ApolloProvider client={client}>
+          <Router>
+            <App />
+          </Router>
+        </ApolloProvider>
+      </PersistGate>
     </Provider>
   </React.StrictMode>
 );

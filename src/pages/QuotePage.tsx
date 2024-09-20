@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_QUOTES } from "../graphql/queries/queries";
-import { useLocation } from "react-router-dom";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import {
   DELETE_QUOTE,
@@ -10,53 +9,21 @@ import {
   UPDATE_QUOTE,
 } from "../graphql/mutations/mutations";
 import { Modal, Rate, Flex, Input, Radio, Checkbox } from "antd";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa6";
 import FetchComment from "../components/FetchComment";
-
-const languages = [
-  { label: "English", count: 4082 },
-  { label: "Español", count: 837 },
-  { label: "Türkçe", count: 322 },
-  { label: "Português", count: 638 },
-  { label: "العربية", count: 178 },
-  { label: "日本語", count: 288 },
-];
-
-const durations = [
-  { label: "0-1 Hour", count: 531 },
-  { label: "1-3 Hours", count: 1894 },
-  { label: "3-6 Hours", count: 1580 },
-  { label: "6-17 Hours", count: 2345, disabled: true }, // Example of disabled option
-];
-
-const features = [
-  { label: "Feature A", count: 10 },
-  { label: "Feature B", count: 5 },
-  { label: "Feature C", count: 8 },
-  { label: "Feature D", count: 3 },
-];
-
-const topics = [
-  { label: "Topic 1", count: 20 },
-  { label: "Topic 2", count: 15 },
-  { label: "Topic 3", count: 7 },
-  { label: "Topic 4", count: 12 },
-];
-
-const levels = [
-  { label: "Beginner", count: 25 },
-  { label: "Intermediate", count: 18 },
-  { label: "Advanced", count: 12 },
-  { label: "Expert", count: 5 },
-];
-
-const prices = [
-  { label: "Free", count: 10 },
-  { label: "Paid", count: 25 },
-];
+import {
+  durations,
+  languages,
+  levels,
+  prices,
+  topics,
+  features,
+} from "../data";
+import { setRating } from "../store/advanceFilterSlice";
+import { RadioChangeEvent } from "antd/lib";
 
 const QuotePage = () => {
   const [updateQuoteMutation] = useMutation(UPDATE_QUOTE);
@@ -64,6 +31,11 @@ const QuotePage = () => {
   const [likeQuoteMutation] = useMutation(LIKE_QUOTE);
   const [disLikeQuoteMutation] = useMutation(DISLIKE_QUOTE);
   const [increaseRatingMutation] = useMutation(INCREASE_RATING);
+  const [searchValue, setSearchValue] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const rating = useSelector((state: RootState) => state.advanceFilter.rating);
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -96,15 +68,32 @@ const QuotePage = () => {
     (state: RootState) => state?.auth?.accessToken
   );
 
+  const handleAdvanceRatingChange = (e: RadioChangeEvent) => {
+    const selectedRating = e.target.value;
+    dispatch(setRating(selectedRating));
+  };
+
   const { user } = useSelector((state: RootState) => state?.auth);
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const title = searchParams.get("title");
+  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
+    variables: {
+      filters: { title: "", minRating: rating },
+    },
+  });
 
-  const { data, loading, refetch } = useQuery(GET_ALL_QUOTES);
+  if (loading) return <h2>Loading...</h2>;
 
-  // for modal
+  const handleSearch = () => {
+    setHasSearched(true);
+    refetch({
+      filters: { title: searchValue },
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
   const showModal = (quoteId: string, createById: string) => {
     if (!accessToken) {
       alert("Access token is missing. Please login to update quotes.");
@@ -130,7 +119,6 @@ const QuotePage = () => {
         },
       });
       console.log(`response: `, response.data?.updateQuote);
-      // Refetch the getAllQuotes query to update the UI after update
       await refetch();
     } catch (err) {
       console.log(err);
@@ -141,7 +129,6 @@ const QuotePage = () => {
     setIsModalOpen(false);
   };
 
-  // delete quote
   const handleDelete = async (quoteId: string, createdById: string) => {
     try {
       if (!accessToken) {
@@ -162,20 +149,16 @@ const QuotePage = () => {
 
       console.log("Quote deleted successfully:", response);
 
-      // Refetch the getAllQuotes query to update the UI after deletion
       await refetch();
     } catch (error) {
       console.error("Error deleting quote:", error);
     }
   };
 
-  if (loading) return <h1>Loading...</h1>;
-
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdateQuoteTitle(e.target.value);
   };
 
-  // like a quote
   const likeQuote = async (quoteId: string) => {
     try {
       await likeQuoteMutation({
@@ -244,7 +227,6 @@ const QuotePage = () => {
     setIsModalOpenDislike(false);
   };
 
-  // rating
   const handleRatingChange = async (quoteId: string, rating: number) => {
     try {
       await increaseRatingMutation({
@@ -268,7 +250,6 @@ const QuotePage = () => {
           {quote?.createBy?.firstName} + {quote?.createBy?.lastName}
         </div>
 
-        {/* rating */}
         {/* Rating */}
         <Flex gap="middle" vertical>
           <Rate
@@ -284,7 +265,7 @@ const QuotePage = () => {
           {quote?.createBy?.email}
         </div>
 
-        {quote.images?.map((item) => (
+        {quote?.images?.map((item) => (
           <div
             aria-label=""
             className="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
@@ -293,7 +274,7 @@ const QuotePage = () => {
           </div>
         ))}
 
-        {quote.videos?.map((item, index) => (
+        {quote?.videos?.map((item, index) => (
           <div
             key={index}
             aria-label=""
@@ -398,8 +379,20 @@ const QuotePage = () => {
         >
           Advance Filter..
         </h3>
-        <Input placeholder="Basic usage" style={{ marginBottom: "16px" }} />
 
+        <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Search :</h4>
+        <div className="flex">
+          <Input
+            placeholder="Search Quotes.."
+            className="p-4"
+            value={searchValue}
+            onChange={handleChange}
+          />
+
+          <button className="p-3 bg-red-400" onClick={handleSearch}>
+            Search
+          </button>
+        </div>
         <div
           style={{
             padding: "10px",
@@ -408,17 +401,17 @@ const QuotePage = () => {
           }}
         >
           <h4 style={{ fontSize: "18px", fontWeight: "bold" }}>Ratings</h4>
-          <Radio.Group>
-            <Radio style={{ display: "block" }} value={1}>
+          <Radio.Group onChange={handleAdvanceRatingChange} value={rating}>
+            <Radio value={1}>
               <span>⭐⭐⭐⭐ 4.5 & up (4,320)</span>
             </Radio>
-            <Radio style={{ display: "block" }} value={2}>
+            <Radio value={2}>
               <span>⭐⭐⭐ 4.0 & up (7,839)</span>
             </Radio>
-            <Radio style={{ display: "block" }} value={3}>
+            <Radio value={3}>
               <span>⭐⭐ 3.5 & up (9,305)</span>
             </Radio>
-            <Radio style={{ display: "block" }} value={4}>
+            <Radio value={4}>
               <span>⭐ 3.0 & up (9,813)</span>
             </Radio>
           </Radio.Group>
