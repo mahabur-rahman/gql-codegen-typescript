@@ -22,7 +22,7 @@ import {
   topics,
   features,
 } from "../data";
-import { setRating } from "../store/advanceFilterSlice";
+import { setRating, toggleLanguage } from "../store/advanceFilterSlice";
 import { RadioChangeEvent } from "antd/lib";
 
 const QuotePage = () => {
@@ -36,6 +36,8 @@ const QuotePage = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const rating = useSelector((state: RootState) => state.advanceFilter.rating);
+  const selectedLanguages = useSelector((state: RootState) => state.advanceFilter.languages);
+
 
   const [likesInfo, setLikesInfo] = useState<
     Array<{
@@ -73,11 +75,18 @@ const QuotePage = () => {
     dispatch(setRating(selectedRating));
   };
 
+  const handleLanguageChange = (language: string) => {
+    dispatch(toggleLanguage(language));
+  };
+
+
+  console.log(selectedLanguages)
+
   const { user } = useSelector((state: RootState) => state?.auth);
 
   const { data, loading, refetch } = useQuery(GET_ALL_QUOTES, {
     variables: {
-      filters: { title: "", minRating: rating },
+      filters: { title: "", minRating: rating, languages: selectedLanguages },
     },
   });
 
@@ -421,7 +430,11 @@ const QuotePage = () => {
           <h4 className="mb-4 text-lg font-bold">Language</h4>
           <div className="space-y-2">
             {languages.map((language) => (
-              <Checkbox key={language.label}>
+              <Checkbox
+                key={language.label}
+                checked={selectedLanguages.includes(language.label)}
+                onChange={() => handleLanguageChange(language.label)}
+              >
                 {`${language.label} (${language.count})`}
               </Checkbox>
             ))}

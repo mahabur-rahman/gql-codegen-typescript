@@ -1,6 +1,6 @@
 export const languages = [
   { label: "English", count: 4082 },
-  { label: "Español", count: 837 },
+  { label: "French", count: 837 },
   { label: "Türkçe", count: 322 },
   { label: "Português", count: 638 },
   { label: "العربية", count: 178 },
