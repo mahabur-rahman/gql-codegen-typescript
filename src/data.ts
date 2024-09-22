@@ -4,7 +4,7 @@ export const languages = [
   { label: "Türkçe", count: 322 },
   { label: "Português", count: 638 },
   { label: "العربية", count: 178 },
-  { label: "日本語", count: 288 },
+  { label: "Other", count: 288 },
 ];
 
 export const durations = [

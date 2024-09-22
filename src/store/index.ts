@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import authReducer from "./authSlice";
+import authReducer, { rehydrateAuth } from "./authSlice"; // Import rehydrateAuth
 import advanceFilterReducer from "./advanceFilterSlice";
 import { combineReducers } from "redux";
 import storage from "redux-persist/lib/storage";
@@ -24,6 +24,14 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }),
+});
+
+
+store.subscribe(() => {
+  const { auth } = store.getState();
+  if (!auth.accessToken && localStorage.getItem("accessToken")) {
+    store.dispatch(rehydrateAuth());
+  }
 });
 
 export const persistor = persistStore(store);
