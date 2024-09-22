@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "advanceFilter"], // Only persist necessary reducers
+  whitelist: ["auth", "advanceFilter"], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -26,7 +26,7 @@ export const store = configureStore({
     }),
 });
 
-// Dispatch rehydrateAuth to ensure rehydration from localStorage
+
 store.subscribe(() => {
   const { auth } = store.getState();
   if (!auth.accessToken && localStorage.getItem("accessToken")) {

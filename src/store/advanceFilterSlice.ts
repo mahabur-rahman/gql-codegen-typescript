@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface AdvanceFilterState {
+export interface AdvanceFilterState {
   rating: number | null;
   languages: string[];
 }
@@ -11,7 +11,7 @@ const initialState: AdvanceFilterState = {
 };
 
 const advanceFilterSlice = createSlice({
-  name: 'advanceFilter',
+  name: "advanceFilter",
   initialState,
   reducers: {
     setRating(state, action: PayloadAction<number | null>) {
@@ -22,7 +22,7 @@ const advanceFilterSlice = createSlice({
     },
     toggleLanguage(state, action: PayloadAction<string>) {
       const language = action.payload;
-      // If language already exists, remove it (unselect); otherwise, add it (select)
+
       if (state.languages.includes(language)) {
         state.languages = state.languages.filter((lang) => lang !== language);
       } else {
@@ -32,5 +32,6 @@ const advanceFilterSlice = createSlice({
   },
 });
 
-export const { setRating, setLanguages, toggleLanguage } = advanceFilterSlice.actions;
+export const { setRating, setLanguages, toggleLanguage } =
+  advanceFilterSlice.actions;
 export default advanceFilterSlice.reducer;

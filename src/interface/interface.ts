@@ -15,3 +15,4 @@ export interface Notification {
 export type ResetNotificationCountResponse = {
   resetNotificationCount: string;
 };
+
