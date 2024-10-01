@@ -74,10 +74,14 @@ export type Mutation = {
   resetNotificationCount: Scalars['String']['output'];
   resetPassword: User;
   sendEmail: Scalars['Boolean']['output'];
+  /** Send OTP to a user email */
+  sendOTP: Scalars['String']['output'];
   signUp: User;
   updateQuote: Quote;
   updateUser: User;
   updateUserQuotes: User;
+  /** Verify OTP sent to user email */
+  verifyOTP: Scalars['Boolean']['output'];
 };
 
 
@@ -161,6 +165,11 @@ export type MutationSendEmailArgs = {
 };
 
 
+export type MutationSendOtpArgs = {
+  email: Scalars['String']['input'];
+};
+
+
 export type MutationSignUpArgs = {
   signUpDto: SignUpDto;
 };
@@ -181,6 +190,12 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserQuotesArgs = {
   quotes: Array<Scalars['String']['input']>;
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationVerifyOtpArgs = {
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
 };
 
 export type Notification = {
