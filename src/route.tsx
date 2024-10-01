@@ -1,4 +1,5 @@
 import ForgotPassword from "./components/ForgotPassword";
+import GoogleEventsApi from "./components/GoogleEventsApi";
 import PaymentFailed from "./components/PaymentFailed";
 import PaymentSuccess from "./components/PaymentSuccess";
 import ResetPassword from "./components/ResetPassword";
@@ -24,4 +25,5 @@ export const routes = [
   { path: "/contact", element: <Contact /> },
   { path: "/forget-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
+{path: "/google-events", element: <GoogleEventsApi /> },
 ];
