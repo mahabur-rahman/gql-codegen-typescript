@@ -8,25 +8,20 @@ const EventCalender = () => {
   const calendarRef = useRef(null);
 
   const [events, setEvents] = useState([
-    { title: "Event 1", start: "2024-10-17", backgroundColor: "#ff0000" },
+    { title: "All Day Event", start: "2024-10-01", allDay: true },
     {
-      title: "Conference",
-      start: "2024-10-09",
-      end: "2024-09-11",
-      backgroundColor: "#00bfff",
+      title: "Long Event",
+      start: "2024-10-06",
+      end: "2024-10-08",
     },
-    {
-      title: "Conference",
-      start: "2024-10-09",
-      end: "2024-09-11",
-      backgroundColor: "#00bfff",
-    },
-    {
-      title: "Conference",
-      start: "2024-10-09",
-      end: "2024-09-11",
-      backgroundColor: "#00bfff",
-    },
+    { title: "Repeating Event", start: "2024-10-09T16:00:00" },
+    { title: "Repeating Event", start: "2024-10-16T16:00:00" },
+    { title: "Conference", start: "2024-10-11", allDay: true },
+    { title: "Meeting", start: "2024-10-11T10:30:00" },
+    { title: "Lunch", start: "2024-10-11T12:00:00" },
+    { title: "Meeting", start: "2024-10-11T14:30:00" },
+    { title: "Birthday Party", start: "2024-10-07T07:00:00" },
+    { title: "Click for Google", url: "http://google.com/", start: "2024-10-28" },
   ]);
 
   return (
@@ -39,10 +34,11 @@ const EventCalender = () => {
         editable={true}
         selectable={true}
         headerToolbar={{
-          left: "",
+          left: "prev,next today",
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
+        eventColor="#378006" 
       />
     </div>
   );

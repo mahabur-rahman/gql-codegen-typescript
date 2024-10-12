@@ -127,6 +127,16 @@ export const Navbar = () => {
             </li>
             <li>
               <Link
+                to="/event-calender"
+                aria-label="Payment"
+                title="Payment"
+                className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
+              >
+                Calender
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/contact"
                 className="inline-flex items-center justify-center h-12 px-6 font-medium tracking-wide text-black transition duration-200 rounded bg-deep-purple-accent-400 focus:shadow-outline focus:outline-none"
                 aria-label="Contact"

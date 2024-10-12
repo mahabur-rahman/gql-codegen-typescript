@@ -1,5 +1,5 @@
 import ForgotPassword from "./components/ForgotPassword";
-import EventCalender from "./components/GoogleEventsApi";
+import EventCalender from "./components/EventCalender";
 import PaymentFailed from "./components/PaymentFailed";
 import PaymentSuccess from "./components/PaymentSuccess";
 import ResetPassword from "./components/ResetPassword";
