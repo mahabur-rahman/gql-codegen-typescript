@@ -20,6 +20,7 @@ const EventCalendar: React.FC = () => {
   ];
 
   const [timezone, setTimezone] = useState<string>("local");
+  const [theme, setTheme] = useState<string>("light");
 
   const [events, setEvents] = useState<EventInput[]>([
     { title: "All Day Event", start: "2024-10-01", allDay: true },
@@ -39,17 +40,38 @@ const EventCalendar: React.FC = () => {
       title: "Click for Google",
       url: "http://google.com/",
       start: "2024-10-28",
+      backgroundColor: "#ff0000",
+      borderColor: "#ffcc00",
     },
   ]);
 
+  // Handle timezone change
   const handleTimezoneChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setTimezone(e.target.value);
   };
 
+  // Toggle between light and dark theme
+  const handleThemeToggle = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <label>Select Timezone: </label>
-      <select value={timezone} onChange={handleTimezoneChange} className="p-3 mb-5 bg-slate-200">
+    <div className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
+      {/* Theme Toggle Button */}
+     <div className="text-end"> <button
+        onClick={handleThemeToggle}
+        className="px-4 py-2 mb-5 text-white bg-indigo-600 rounded-full"
+      >
+        Toggle {theme === "light" ? "Dark" : "Light"} Theme
+      </button></div>
+<br />
+      {/* Dropdown to select timezone */}
+      <label className="mr-2">Select Timezone: </label>
+      <select
+        value={timezone}
+        onChange={handleTimezoneChange}
+        className={`p-3 mb-5 ${theme === "dark" ? "bg-gray-700 text-white" : "bg-slate-200 text-black"}`}
+      >
         {timezones.map((zone, index) => (
           <option key={index} value={zone}>
             {zone}
@@ -57,6 +79,7 @@ const EventCalendar: React.FC = () => {
         ))}
       </select>
 
+      {/* FullCalendar Component */}
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -70,6 +93,7 @@ const EventCalendar: React.FC = () => {
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
+        themeSystem={theme === "dark" ? "bootstrap" : "standard"}
       />
     </div>
   );
