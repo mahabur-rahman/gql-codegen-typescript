@@ -70,7 +70,7 @@ const EventCalendar: React.FC = () => {
       <select
         value={timezone}
         onChange={handleTimezoneChange}
-        className={`p-3 mb-5 ${theme === "dark" ? "bg-gray-700 text-white" : "bg-slate-200 text-black"}`}
+        className={`p-2 mb-5 ${theme === "dark" ? "bg-gray-700 text-white" : "bg-slate-200 text-black"}`}
       >
         {timezones.map((zone, index) => (
           <option key={index} value={zone}>
