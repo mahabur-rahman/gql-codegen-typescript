@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { EventInput } from "@fullcalendar/core";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_CALENDER } from "../graphql/queries/queries";
+import { CalendarType } from "../graphql/__generated__/graphql";
 
 const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
@@ -25,7 +26,7 @@ const EventCalendar: React.FC = () => {
 
     if (data && data.getAllCalendars) {
       const fetchedEvents: EventInput[] = data.getAllCalendars.map(
-        (event: any) => ({
+        (event: CalendarType) => ({
           id: event._id,
           title: event.title,
           start: new Date(parseInt(event.startDate)).toISOString(),
@@ -33,10 +34,9 @@ const EventCalendar: React.FC = () => {
             ? new Date(parseInt(event.endDate)).toISOString()
             : undefined,
           allDay: event.allDay,
-          url: event.url,
-          // Use colors from the backend response
-          backgroundColor: event.backgroundColor || undefined, // Fallback to undefined if null
-          borderColor: event.borderColor || undefined, // Fallback to undefined if null
+          url: event.url || undefined, // Ensure it resolves to undefined instead of null
+          backgroundColor: event.backgroundColor || undefined,
+          borderColor: event.borderColor || undefined,
         })
       );
 
