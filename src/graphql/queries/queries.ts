@@ -72,5 +72,21 @@ export const GET_ALL_NOTIFICATIONS = gql(`
 
 `);
 
+export const GET_ALL_CALENDER = gql(` 
 
+query GetAllCalendars {
+  getAllCalendars {
+    _id
+    title
+    desc
+    startDate
+    endDate
+    allDay
+    url
+    backgroundColor
+    borderColor
+  }
+}
 
+  
+  `);

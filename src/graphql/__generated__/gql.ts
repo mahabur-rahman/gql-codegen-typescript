@@ -31,6 +31,7 @@ const documents = {
     "\n  query GetAllQuotes($filters: QuoteFiltersInput) {\n  getAllQuotes(filters: $filters) {\n    _id\n    title\n    createBy {\n      _id\n      firstName\n      lastName\n      email\n      role\n    }\n    likes {\n      _id\n      firstName\n      lastName\n      email\n      role\n    }\n    dislikes {\n      _id\n      firstName\n      lastName\n      email\n      role\n    }\n  }\n}\n\n": types.GetAllQuotesDocument,
     "\nquery getCommentsByQuote($quoteId:String!){\n  getCommentsByQuote(quoteId:$quoteId){\n    _id\n    content\n    commentedBy{\n    _id\n      firstName\n      lastName\n    }\n    replies{\n      repliedBy{\n        _id\n        firstName\n      }\n      replyContent\n    }\n  }\n}\n  \n": types.GetCommentsByQuoteDocument,
     "\n  query GetAllNotifications {\n  getAllNotifications {\n    notifications {\n      _id\n      title\n      user {\n        _id\n        firstName\n        lastName\n        email\n      }\n    }\n    notificationsCount\n  }\n}\n\n": types.GetAllNotificationsDocument,
+    " \n\nquery GetAllCalendars {\n  getAllCalendars {\n    _id\n    title\n    desc\n    startDate\n    endDate\n    allDay\n    url\n    backgroundColor\n    borderColor\n  }\n}\n\n  \n  ": types.GetAllCalendarsDocument,
     "\n    subscription notificationCreated {\n      notificationCreated {\n        _id\n        title\n        user {\n          _id\n          firstName\n          lastName\n          email\n        }\n      }\n    }\n  ": types.NotificationCreatedDocument,
 };
 
@@ -120,6 +121,10 @@ export function gql(source: "\nquery getCommentsByQuote($quoteId:String!){\n  ge
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query GetAllNotifications {\n  getAllNotifications {\n    notifications {\n      _id\n      title\n      user {\n        _id\n        firstName\n        lastName\n        email\n      }\n    }\n    notificationsCount\n  }\n}\n\n"): (typeof documents)["\n  query GetAllNotifications {\n  getAllNotifications {\n    notifications {\n      _id\n      title\n      user {\n        _id\n        firstName\n        lastName\n        email\n      }\n    }\n    notificationsCount\n  }\n}\n\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: " \n\nquery GetAllCalendars {\n  getAllCalendars {\n    _id\n    title\n    desc\n    startDate\n    endDate\n    allDay\n    url\n    backgroundColor\n    borderColor\n  }\n}\n\n  \n  "): (typeof documents)[" \n\nquery GetAllCalendars {\n  getAllCalendars {\n    _id\n    title\n    desc\n    startDate\n    endDate\n    allDay\n    url\n    backgroundColor\n    borderColor\n  }\n}\n\n  \n  "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
