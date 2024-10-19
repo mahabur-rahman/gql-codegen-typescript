@@ -1,12 +1,47 @@
-import React, { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useRef, ChangeEvent, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventInput } from "@fullcalendar/core";
+import { useQuery } from "@apollo/client";
+import { GET_ALL_CALENDER } from "../graphql/queries/queries";
 
 const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
+  const { data, loading, error } = useQuery(GET_ALL_CALENDER);
+
+  // Initialize state for events
+  const [events, setEvents] = useState<EventInput[]>([]);
+  const [timezone, setTimezone] = useState<string>("local");
+  const [theme, setTheme] = useState<string>("light");
+
+  // Handle loading state
+  useEffect(() => {
+    if (loading) return; // Early return if loading
+
+    // Handle error state
+    if (error) {
+      console.error("Error fetching calendars:", error.message);
+      return;
+    }
+
+    // Update events with the data fetched from GraphQL
+    if (data && data.getAllCalendars) {
+      const fetchedEvents: EventInput[] = data.getAllCalendars.map((event: any) => ({
+        id: event._id,
+        title: event.title,
+        start: new Date(parseInt(event.startDate)).toISOString(), // Convert timestamp to ISO string
+        end: event.endDate ? new Date(parseInt(event.endDate)).toISOString() : undefined,
+        allDay: event.allDay,
+        url: event.url,
+        backgroundColor: event.backgroundColor,
+        borderColor: event.borderColor,
+      }));
+
+      setEvents(fetchedEvents);
+    }
+  }, [data, loading, error]); // Include all dependencies
 
   const timezones: string[] = [
     "local",
@@ -18,32 +53,6 @@ const EventCalendar: React.FC = () => {
     "Africa/Cairo",
     "Asia/Dubai",
   ];
-
-  const [timezone, setTimezone] = useState<string>("local");
-  const [theme, setTheme] = useState<string>("light");
-
-  const [events, setEvents] = useState<EventInput[]>([
-    { title: "All Day Event", start: "2024-10-01", allDay: true },
-    {
-      title: "Long Event",
-      start: "2024-10-06",
-      end: "2024-10-08",
-    },
-    { title: "Repeating Event", start: "2024-10-09T16:00:00" },
-    { title: "Repeating Event", start: "2024-10-16T16:00:00" },
-    { title: "Conference", start: "2024-10-11", allDay: true },
-    { title: "Meeting", start: "2024-10-11T10:30:00" },
-    { title: "Lunch", start: "2024-10-11T12:00:00" },
-    { title: "Meeting", start: "2024-10-11T14:30:00" },
-    { title: "Birthday Party", start: "2024-10-07T07:00:00" },
-    {
-      title: "Click for Google",
-      url: "http://google.com/",
-      start: "2024-10-28",
-      backgroundColor: "#ff0000",
-      borderColor: "#ffcc00",
-    },
-  ]);
 
   // Handle timezone change
   const handleTimezoneChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -58,13 +67,15 @@ const EventCalendar: React.FC = () => {
   return (
     <div className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
       {/* Theme Toggle Button */}
-     <div className="text-end"> <button
-        onClick={handleThemeToggle}
-        className="px-4 py-2 mb-5 text-white bg-indigo-600 rounded-full"
-      >
-        Toggle {theme === "light" ? "Dark" : "Light"} Theme
-      </button></div>
-<br />
+      <div className="text-end">
+        <button
+          onClick={handleThemeToggle}
+          className="px-4 py-2 mb-5 text-white bg-indigo-600 rounded-full"
+        >
+          Toggle {theme === "light" ? "Dark" : "Light"} Theme
+        </button>
+      </div>
+      <br />
       {/* Dropdown to select timezone */}
       <label className="mr-2">Select Timezone: </label>
       <select
