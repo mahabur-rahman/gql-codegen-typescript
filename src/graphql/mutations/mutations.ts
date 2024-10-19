@@ -178,3 +178,38 @@ export const PAYMENT = gql(`
 
   `);
 
+export const CREATE_CALENDER = gql(` 
+    
+    mutation CreateCalendar(
+      $title: String!, 
+      $desc: String, 
+      $startDate: String!,
+      $endDate: String!,
+      $allDay: Boolean!, 
+      $url: String, 
+      $backgroundColor: String,
+      $borderColor: String
+) {
+  createCalendar(createCalendarDto: {
+    title: $title,
+    desc:$desc,
+    startDate: $startDate,
+    endDate: $endDate,
+    allDay: $allDay,
+    url: $url,
+    backgroundColor: $backgroundColor,
+    borderColor: $borderColor
+  }) {
+    _id
+    title
+    startDate
+    endDate
+    allDay
+    url
+    backgroundColor
+    borderColor
+  }
+}
+
+    
+    `);

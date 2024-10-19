@@ -4,36 +4,21 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventInput } from "@fullcalendar/core";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CALENDER } from "../graphql/queries/queries";
+import { CREATE_CALENDER } from "../graphql/mutations/mutations"; // Import the mutation
 import { CalendarType } from "../graphql/__generated__/graphql";
 import { Modal, Form, Input, DatePicker, Switch } from "antd"; // Import Ant Design components
 
 const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
   const { data, loading, error } = useQuery(GET_ALL_CALENDER);
-
+  
+  const [createCalendar] = useMutation(CREATE_CALENDER); // Use mutation hook
   const [events, setEvents] = useState<EventInput[]>([]);
   const [timezone, setTimezone] = useState<string>("local");
   const [theme, setTheme] = useState<string>("light");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [eventDetails, setEventDetails] = useState<{
-    title: string;
-    description: string;
-    allDay: boolean;
-    start: string;
-    end?: string;
-    backgroundColor: string;
-    textColor: string;
-  }>({
-    title: "",
-    description: "",
-    allDay: false,
-    start: "",
-    end: "",
-    backgroundColor: "#ffffff", // Default background color
-    textColor: "#000000", // Default text color
-  });
 
   useEffect(() => {
     if (loading) return;
@@ -55,7 +40,6 @@ const EventCalendar: React.FC = () => {
           allDay: event.allDay,
           backgroundColor: event.backgroundColor || undefined,
           borderColor: event.borderColor || undefined,
-          // Use `extendedProps` to add custom fields like description
           extendedProps: {
             description: event.desc || "",
           },
@@ -89,23 +73,39 @@ const EventCalendar: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const onFinish = (values: any) => {
-    const newEvent: EventInput = {
-      id: String(new Date().getTime()),
-      title: values.title,
-      start: values.start.format(),
-      end: values.end ? values.end.format() : undefined,
-      allDay: values.allDay,
-      backgroundColor: values.backgroundColor,
-      borderColor: values.textColor,
-      // Store description inside `extendedProps`
-      extendedProps: {
-        description: values.description || "",
-      },
-    };
+  const onFinish = async (values: any) => {
+    try {
+      const { data: newEventData } = await createCalendar({
+        variables: {
+          title: values.title,
+          desc: values.description,
+          startDate: values.start.format(),
+          endDate: values.end ? values.end.format() : values.start.format(),
+          allDay: values.allDay,
+          url: values.url || "", // Optional URL field
+          backgroundColor: values.backgroundColor,
+          borderColor: values.textColor,
+        },
+      });
 
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
-    setIsModalVisible(false);
+      const newEvent = {
+        id: newEventData.createCalendar._id,
+        title: newEventData.createCalendar.title,
+        start: newEventData.createCalendar.startDate,
+        end: newEventData.createCalendar.endDate,
+        allDay: newEventData.createCalendar.allDay,
+        backgroundColor: newEventData.createCalendar.backgroundColor,
+        borderColor: newEventData.createCalendar.borderColor,
+        extendedProps: {
+          description: newEventData.createCalendar.desc || "",
+        },
+      };
+
+      setEvents((prevEvents) => [...prevEvents, newEvent]);
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("Error creating calendar event:", error);
+    }
   };
 
   return (
@@ -157,7 +157,7 @@ const EventCalendar: React.FC = () => {
         eventContent={(eventInfo) => (
           <div>
             <b>{eventInfo.event.title}</b>
-            <p>{eventInfo.event.extendedProps.description}</p> {/* Display description */}
+            <p>{eventInfo.event.extendedProps.description}</p>
           </div>
         )}
       />
