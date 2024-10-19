@@ -182,7 +182,7 @@ export const CREATE_CALENDER = gql(`
     
     mutation CreateCalendar(
       $title: String!, 
-      $desc: String, 
+      $description: String, 
       $startDate: String!,
       $endDate: String!,
       $allDay: Boolean!, 
@@ -192,7 +192,7 @@ export const CREATE_CALENDER = gql(`
 ) {
   createCalendar(createCalendarDto: {
     title: $title,
-    desc:$desc,
+    description:$description,
     startDate: $startDate,
     endDate: $endDate,
     allDay: $allDay,
@@ -202,6 +202,7 @@ export const CREATE_CALENDER = gql(`
   }) {
     _id
     title
+    description
     startDate
     endDate
     allDay
@@ -213,3 +214,29 @@ export const CREATE_CALENDER = gql(`
 
     
     `);
+
+export const UPDATE_CALENDER = gql(` 
+  mutation UpdateCalendarEvent(
+        $id: String!, 
+        $startDate: String!, 
+        $endDate: String!
+) {
+  updateCalendar(
+    id: $id, 
+    updateCalendarDto: {
+      startDate: $startDate,
+      endDate: $endDate
+    }
+  ) {
+    _id
+    title
+    description
+    startDate
+    endDate
+    allDay
+    url
+    backgroundColor
+    borderColor
+  }
+}
+`);
