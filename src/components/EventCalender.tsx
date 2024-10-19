@@ -14,7 +14,9 @@ const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
   const { data, loading, error } = useQuery(GET_ALL_CALENDER);
   
-  const [createCalendar] = useMutation(CREATE_CALENDER); // Use mutation hook
+  const [createCalendar] = useMutation(CREATE_CALENDER, {
+    refetchQueries: [{ query: GET_ALL_CALENDER }], // Refetches calendar events after mutation
+  });
   const [events, setEvents] = useState<EventInput[]>([]);
   const [timezone, setTimezone] = useState<string>("local");
   const [theme, setTheme] = useState<string>("light");
