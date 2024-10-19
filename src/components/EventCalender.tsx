@@ -11,37 +11,38 @@ const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
   const { data, loading, error } = useQuery(GET_ALL_CALENDER);
 
-  // Initialize state for events
   const [events, setEvents] = useState<EventInput[]>([]);
   const [timezone, setTimezone] = useState<string>("local");
   const [theme, setTheme] = useState<string>("light");
 
-  // Handle loading state
   useEffect(() => {
-    if (loading) return; // Early return if loading
+    if (loading) return;
 
-    // Handle error state
     if (error) {
       console.error("Error fetching calendars:", error.message);
       return;
     }
 
-    // Update events with the data fetched from GraphQL
     if (data && data.getAllCalendars) {
-      const fetchedEvents: EventInput[] = data.getAllCalendars.map((event: any) => ({
-        id: event._id,
-        title: event.title,
-        start: new Date(parseInt(event.startDate)).toISOString(), // Convert timestamp to ISO string
-        end: event.endDate ? new Date(parseInt(event.endDate)).toISOString() : undefined,
-        allDay: event.allDay,
-        url: event.url,
-        backgroundColor: event.backgroundColor,
-        borderColor: event.borderColor,
-      }));
+      const fetchedEvents: EventInput[] = data.getAllCalendars.map(
+        (event: any) => ({
+          id: event._id,
+          title: event.title,
+          start: new Date(parseInt(event.startDate)).toISOString(),
+          end: event.endDate
+            ? new Date(parseInt(event.endDate)).toISOString()
+            : undefined,
+          allDay: event.allDay,
+          url: event.url,
+          // Use colors from the backend response
+          backgroundColor: event.backgroundColor || undefined, // Fallback to undefined if null
+          borderColor: event.borderColor || undefined, // Fallback to undefined if null
+        })
+      );
 
       setEvents(fetchedEvents);
     }
-  }, [data, loading, error]); // Include all dependencies
+  }, [data, loading, error]);
 
   const timezones: string[] = [
     "local",
@@ -54,19 +55,18 @@ const EventCalendar: React.FC = () => {
     "Asia/Dubai",
   ];
 
-  // Handle timezone change
   const handleTimezoneChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setTimezone(e.target.value);
   };
 
-  // Toggle between light and dark theme
   const handleThemeToggle = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
-    <div className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
-      {/* Theme Toggle Button */}
+    <div
+      className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+    >
       <div className="text-end">
         <button
           onClick={handleThemeToggle}
@@ -76,7 +76,6 @@ const EventCalendar: React.FC = () => {
         </button>
       </div>
       <br />
-      {/* Dropdown to select timezone */}
       <label className="mr-2">Select Timezone: </label>
       <select
         value={timezone}
@@ -90,7 +89,6 @@ const EventCalendar: React.FC = () => {
         ))}
       </select>
 
-      {/* FullCalendar Component */}
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
