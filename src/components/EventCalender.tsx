@@ -3,19 +3,31 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { EventInput } from "@fullcalendar/core";
+import { EventInput } from "@fullcalendar/core"; // Correct import for EventInput
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CALENDER } from "../graphql/queries/queries";
-import { CREATE_CALENDER } from "../graphql/mutations/mutations"; // Import the mutation
+import { CREATE_CALENDER } from "../graphql/mutations/mutations";
 import { CalendarType } from "../graphql/__generated__/graphql";
-import { Modal, Form, Input, DatePicker, Switch } from "antd"; // Import Ant Design components
+import { Modal, Form, Input, DatePicker, Switch } from "antd";
+import { Moment } from "moment"; // Import Moment type for DatePicker
+import { ApolloError } from "@apollo/client/errors";
+
+interface FormValues {
+  title: string;
+  description: string;
+  start: Moment;
+  endDate?: Moment;
+  allDay: boolean;
+  url?: string;
+  backgroundColor: string;
+  textColor: string;
+}
 
 const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
   const { data, loading, error } = useQuery(GET_ALL_CALENDER);
-  
   const [createCalendar] = useMutation(CREATE_CALENDER, {
-    refetchQueries: [{ query: GET_ALL_CALENDER }], // Refetches calendar events after mutation
+    refetchQueries: [{ query: GET_ALL_CALENDER }],
   });
   const [events, setEvents] = useState<EventInput[]>([]);
   const [timezone, setTimezone] = useState<string>("local");
@@ -23,12 +35,7 @@ const EventCalendar: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
-
-    if (error) {
-      console.error("Error fetching calendars:", error.message);
-      return;
-    }
+    if (loading || error) return;
 
     if (data && data.getAllCalendars) {
       const fetchedEvents: EventInput[] = data.getAllCalendars.map(
@@ -36,18 +43,15 @@ const EventCalendar: React.FC = () => {
           id: event._id,
           title: event.title,
           start: new Date(parseInt(event.startDate)).toISOString(),
-          end: event.endDate
-            ? new Date(parseInt(event.endDate)).toISOString()
-            : undefined,
+          end: event.endDate ? new Date(parseInt(event.endDate)).toISOString() : undefined,
           allDay: event.allDay,
           backgroundColor: event.backgroundColor || undefined,
           borderColor: event.borderColor || undefined,
           extendedProps: {
-            description: event.desc || "",
+            description: event.description || "",
           },
         })
       );
-
       setEvents(fetchedEvents);
     }
   }, [data, loading, error]);
@@ -75,45 +79,44 @@ const EventCalendar: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: FormValues) => {
     try {
       const { data: newEventData } = await createCalendar({
         variables: {
           title: values.title,
-          desc: values.description,
+          description: values.description,
           startDate: values.start.format(),
-          endDate: values.end ? values.end.format() : values.start.format(),
+          endDate: values.endDate ? values.endDate.format() : values.start.format(),
           allDay: values.allDay,
-          url: values.url || "", // Optional URL field
+          url: values.url || "",
           backgroundColor: values.backgroundColor,
           borderColor: values.textColor,
         },
       });
 
-      const newEvent = {
-        id: newEventData.createCalendar._id,
-        title: newEventData.createCalendar.title,
-        start: newEventData.createCalendar.startDate,
-        end: newEventData.createCalendar.endDate,
-        allDay: newEventData.createCalendar.allDay,
-        backgroundColor: newEventData.createCalendar.backgroundColor,
-        borderColor: newEventData.createCalendar.borderColor,
+      const newEvent: EventInput = {
+        id: newEventData?.createCalendar._id,
+        title: newEventData?.createCalendar.title,
+        start: newEventData?.createCalendar.startDate,
+        endDate: newEventData?.createCalendar.endDate,
+        allDay: newEventData?.createCalendar.allDay,
+        backgroundColor: newEventData?.createCalendar?.backgroundColor || '',
+        borderColor: newEventData?.createCalendar?.borderColor || '',
         extendedProps: {
-          description: newEventData.createCalendar.desc || "",
+          description: newEventData?.createCalendar.description || '', // Make sure 'description' exists in CalendarType
         },
       };
 
       setEvents((prevEvents) => [...prevEvents, newEvent]);
       setIsModalVisible(false);
-    } catch (error) {
-      console.error("Error creating calendar event:", error);
+    } catch (error: unknown) {
+      const apolloError = error as ApolloError;
+      console.error("Error creating calendar event:", apolloError.message);
     }
   };
 
   return (
-    <div
-      className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}
-    >
+    <div className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
       <div className="text-end">
         <button
           onClick={handleThemeToggle}
