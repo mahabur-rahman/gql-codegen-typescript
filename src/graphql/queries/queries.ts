@@ -78,6 +78,7 @@ query GetAllCalendars {
   getAllCalendars {
     _id
     title
+    desc
     startDate
     endDate
     allDay
