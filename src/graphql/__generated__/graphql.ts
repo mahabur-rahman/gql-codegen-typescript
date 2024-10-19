@@ -22,6 +22,18 @@ export type AttachmentDto = {
   path: Scalars['String']['input'];
 };
 
+export type CalendarType = {
+  __typename?: 'CalendarType';
+  _id: Scalars['ID']['output'];
+  allDay: Scalars['Boolean']['output'];
+  backgroundColor?: Maybe<Scalars['String']['output']>;
+  borderColor?: Maybe<Scalars['String']['output']>;
+  endDate?: Maybe<Scalars['String']['output']>;
+  startDate: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+};
+
 export type Comment = {
   __typename?: 'Comment';
   _id: Scalars['ID']['output'];
@@ -29,6 +41,16 @@ export type Comment = {
   content: Scalars['String']['output'];
   quoteRef: Quote;
   replies: Array<Reply>;
+};
+
+export type CreateCalendarDto = {
+  allDay?: Scalars['Boolean']['input'];
+  backgroundColor?: InputMaybe<Scalars['String']['input']>;
+  borderColor?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateCommentDto = {
@@ -58,6 +80,7 @@ export type LoginResponseType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createCalendar: CalendarType;
   createComment: Comment;
   createQuote: Quote;
   deleteComment: Comment;
@@ -82,6 +105,11 @@ export type Mutation = {
   updateUserQuotes: User;
   /** Verify OTP sent to user email */
   verifyOTP: Scalars['Boolean']['output'];
+};
+
+
+export type MutationCreateCalendarArgs = {
+  createCalendarDto: CreateCalendarDto;
 };
 
 
