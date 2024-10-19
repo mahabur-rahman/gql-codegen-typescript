@@ -7,6 +7,7 @@ import { EventInput } from "@fullcalendar/core";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_CALENDER } from "../graphql/queries/queries";
 import { CalendarType } from "../graphql/__generated__/graphql";
+import { Modal, Form, Input, DatePicker, Switch, ColorPicker } from "antd"; // Import Ant Design components
 
 const EventCalendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar | null>(null);
@@ -15,6 +16,24 @@ const EventCalendar: React.FC = () => {
   const [events, setEvents] = useState<EventInput[]>([]);
   const [timezone, setTimezone] = useState<string>("local");
   const [theme, setTheme] = useState<string>("light");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [eventDetails, setEventDetails] = useState<{
+    title: string;
+    description: string;
+    allDay: boolean;
+    start: string;
+    end?: string;
+    backgroundColor: string;
+    textColor: string;
+  }>({
+    title: "",
+    description: "",
+    allDay: false,
+    start: "",
+    end: "",
+    backgroundColor: "#ffffff", // Default background color
+    textColor: "#000000", // Default text color
+  });
 
   useEffect(() => {
     if (loading) return;
@@ -34,7 +53,7 @@ const EventCalendar: React.FC = () => {
             ? new Date(parseInt(event.endDate)).toISOString()
             : undefined,
           allDay: event.allDay,
-          url: event.url || undefined, // Ensure it resolves to undefined instead of null
+          url: event.url || undefined,
           backgroundColor: event.backgroundColor || undefined,
           borderColor: event.borderColor || undefined,
         })
@@ -63,6 +82,25 @@ const EventCalendar: React.FC = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  const handleEventAdd = () => {
+    setIsModalVisible(true);
+  };
+
+  const onFinish = (values: any) => {
+    const newEvent: EventInput = {
+      id: String(new Date().getTime()), // Generate a unique ID for the event
+      title: values.title,
+      start: values.start.format(), // Format the start date
+      end: values.end ? values.end.format() : undefined, // Format the end date if provided
+      allDay: values.allDay,
+      backgroundColor: values.backgroundColor,
+      borderColor: values.textColor,
+    };
+
+    setEvents((prevEvents) => [...prevEvents, newEvent]); // Update events state with the new event
+    setIsModalVisible(false); // Hide the modal
+  };
+
   return (
     <div
       className={`p-5 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"}`}
@@ -73,6 +111,12 @@ const EventCalendar: React.FC = () => {
           className="px-4 py-2 mb-5 text-white bg-indigo-600 rounded-full"
         >
           Toggle {theme === "light" ? "Dark" : "Light"} Theme
+        </button>
+        <button
+          onClick={handleEventAdd}
+          className="px-4 py-2 mb-5 text-white bg-green-600 rounded-full"
+        >
+          Add Event
         </button>
       </div>
       <br />
@@ -104,6 +148,68 @@ const EventCalendar: React.FC = () => {
         }}
         themeSystem={theme === "dark" ? "bootstrap" : "standard"}
       />
+
+      {/* Modal for adding new events */}
+      <Modal
+        title="Add New Event"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+      >
+        <Form layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            label="Event Title"
+            name="title"
+            rules={[{ required: true, message: 'Please input the event title!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[{ required: true, message: 'Please input the event description!' }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item
+            label="All Day"
+            name="allDay"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            label="Start Date"
+            name="start"
+            rules={[{ required: true, message: 'Please select the start date!' }]}
+          >
+            <DatePicker showTime />
+          </Form.Item>
+          <Form.Item
+            label="End Date"
+            name="end"
+          >
+            <DatePicker showTime />
+          </Form.Item>
+          <Form.Item
+            label="Background Color"
+            name="backgroundColor"
+            rules={[{ required: true, message: 'Please select a background color!' }]}
+          >
+            <Input type="color" />
+          </Form.Item>
+          <Form.Item
+            label="Text Color"
+            name="textColor"
+            rules={[{ required: true, message: 'Please select a text color!' }]}
+          >
+            <Input type="color" />
+          </Form.Item>
+          <Form.Item>
+            <button type="submit" className="ant-btn ant-btn-primary">Add Event</button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
