@@ -214,3 +214,29 @@ export const CREATE_CALENDER = gql(`
 
     
     `);
+
+export const UPDATE_CALENDER = gql(` 
+  mutation UpdateCalendarEvent(
+        $id: String!, 
+        $startDate: String!, 
+        $endDate: String!
+) {
+  updateCalendar(
+    id: $id, 
+    updateCalendarDto: {
+      startDate: $startDate,
+      endDate: $endDate
+    }
+  ) {
+    _id
+    title
+    description
+    startDate
+    endDate
+    allDay
+    url
+    backgroundColor
+    borderColor
+  }
+}
+`);
