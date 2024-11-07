@@ -25,5 +25,6 @@ export const routes = [
   { path: "/contact", element: <Contact /> },
   { path: "/forget-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
-{path: "/event-calender", element: <EventCalender /> },
+  { path: "/event-calender", element: <EventCalender /> },
+
 ];
